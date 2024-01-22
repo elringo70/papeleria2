@@ -7,6 +7,10 @@
 	/** @type {import('./$types').PageData} */
 	export let data;
 
+	/** @type {string} */
+	let todaySales;
+	/** @type {string} */
+	let monthSales;
 	let chart;
 
 	const charData = {
@@ -29,7 +33,8 @@
 
 	onMount(() => {
 		store.setStadistics(data.orders);
-		store.todaySales();
+		todaySales = store.getTodaySales();
+		monthSales = store.getMonthSales();
 
 		const ctx = chart.getContext('2d');
 		new Chart(ctx, config);
@@ -53,7 +58,7 @@
 							>
 								Ventas de hoy
 							</p>
-							<h5 class="mb-2 font-bold text-gray-600 text-2xl">$53,000</h5>
+							<h5 class="mb-2 font-bold text-gray-600 text-2xl">$ {todaySales}</h5>
 							<p class="mb-0">
 								<span class="font-bold leading-normal text-indigo-500">+55%</span> desde ayer
 							</p>
@@ -78,7 +83,7 @@
 							>
 								Ventas del mes
 							</p>
-							<h5 class="mb-2 font-bold text-gray-600 text-2xl">$53,000</h5>
+							<h5 class="mb-2 font-bold text-gray-600 text-2xl">$ {monthSales}</h5>
 							<p class="mb-0">
 								<span class="font-bold leading-normal text-indigo-500">+55%</span> desde ayer
 							</p>
