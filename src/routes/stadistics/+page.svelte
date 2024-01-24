@@ -1,15 +1,18 @@
 <script>
 	import { onMount } from 'svelte';
-	import { store, dashboard } from '$lib/stores/statisticsStores';
+	import { setRawData, dataStore, todaySales } from '$lib/stores/statisticsStores';
 	import Chart from 'chart.js/auto';
 	import Icon from '@iconify/svelte';
 
 	/** @type {import('./$types').PageData} */
 	export let data;
 
-	store.setStadistics(data.orders);
+	// Hidrato el store con los datos de la página
+	// chequeo que aun no este cargado y que haya datos
+	$: if(!$dataStore.loaded && !!data) setRawData(data);
+
 	/** @type {string} */
-	$: todaySales = '';
+	// $: todaySales = ''; // esta variable ya no es necesaria. Podemos usar los datos del derived store con $todaySales (linea 63)
 	/** @type {number} */
 	$: yesterdayPercentage = 0;
 	/** @type {{ product: Object; quantity: number }} */
@@ -34,9 +37,9 @@
 	};
 
 	onMount(() => {
-		store.onLoad();
-		const ctx = chart.getContext('2d');
-		new Chart(ctx, config);
+		// store.onLoad();
+		// const ctx = chart.getContext('2d');
+		// new Chart(ctx, config);
 	});
 </script>
 
@@ -57,7 +60,8 @@
 							>
 								Ventas de hoy
 							</p>
-							<h5 class="mb-2 text-2xl font-bold text-gray-600">$ {$dashboard.todaySales}</h5>
+							<!-- Aca usamos los datos del derived store directo en el HTML -->
+							<h5 class="mb-2 text-2xl font-bold text-gray-600">$ {$todaySales}</h5>
 							<p class="mb-0">
 								{#if yesterdayPercentage === -100}
 									<span class="font-bold leading-normal text-gray-500">0%</span>
@@ -93,7 +97,7 @@
 							>
 								Ventas del mes
 							</p>
-							<h5 class="mb-2 text-2xl font-bold text-gray-600">$ {$dashboard.monthSales}</h5>
+							<!-- <h5 class="mb-2 text-2xl font-bold text-gray-600">$ {$dashboard.monthSales}</h5> -->
 							<p class="mb-0">
 								<span class="font-bold leading-normal text-indigo-500">+55%</span> desde ayer
 							</p>
@@ -143,7 +147,7 @@
 							>
 								Producto del mes
 							</p>
-							<h5 class="mb-2 text-xl font-bold text-gray-600"></h5>
+							<!-- <h5 class="mb-2 text-xl font-bold text-gray-600"></h5> -->
 							<p class="mb-0">
 								<span class="font-bold leading-normal text-indigo-500"></span> ventas
 							</p>
@@ -162,7 +166,7 @@
 
 		<div class="flex h-[400px] gap-5">
 			<div class="p-3 bg-white rounded-lg shadow-lg basis-8/12">
-				<canvas bind:this={chart}></canvas>
+				<!-- <canvas bind:this={chart}></canvas> -->
 			</div>
 			<div class="bg-white rounded-lg shadow-lg basis-4/12">1</div>
 		</div>
