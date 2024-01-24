@@ -1,15 +1,18 @@
 <script>
 	import { onMount } from 'svelte';
-	import { store, dashboard } from './store';
+	import { setRawData, dataStore, todaySales } from '$lib/stores/statisticsStores';
 	import Chart from 'chart.js/auto';
 	import Icon from '@iconify/svelte';
 
 	/** @type {import('./$types').PageData} */
 	export let data;
 
-	store.setStadistics(data.orders);
+	// Hidrato el store con los datos de la página
+	// chequeo que aun no este cargado y que haya datos
+	$: if(!$dataStore.loaded && !!data) setRawData(data);
+
 	/** @type {string} */
-	$: todaySales = '';
+	// $: todaySales = ''; // esta variable ya no es necesaria. Podemos usar los datos del derived store con $todaySales (linea 63)
 	/** @type {number} */
 	$: yesterdayPercentage = 0;
 	/** @type {{ product: Object; quantity: number }} */
@@ -34,9 +37,9 @@
 	};
 
 	onMount(() => {
-		store.onLoad();
-		const ctx = chart.getContext('2d');
-		new Chart(ctx, config);
+		// store.onLoad();
+		// const ctx = chart.getContext('2d');
+		// new Chart(ctx, config);
 	});
 </script>
 
@@ -45,19 +48,20 @@
 </svelte:head>
 
 <div class="flex">
-	<div class="basis-2/12 bg-gray-800 p-5">Drawer</div>
-	<section class="bg-gray-100 flex flex-col basis-10/12 p-6 gap-5">
+	<div class="p-5 bg-gray-800 basis-2/12">Drawer</div>
+	<section class="flex flex-col gap-5 p-6 bg-gray-100 basis-10/12">
 		<div class="flex w-full gap-5">
-			<div class="flex flex-col break-words bg-white shadow-xl rounded-lg p-4 basis-3/12">
+			<div class="flex flex-col p-4 break-words bg-white rounded-lg shadow-xl basis-3/12">
 				<div class="flex gap-5">
 					<div class="flex basis-2/3">
 						<div>
 							<p
-								class="mb-0 font-sans font-semibold leading-normal uppercase text-md text-gray-400"
+								class="mb-0 font-sans font-semibold leading-normal text-gray-400 uppercase text-md"
 							>
 								Ventas de hoy
 							</p>
-							<h5 class="mb-2 font-bold text-gray-600 text-2xl">$ {$dashboard.todaySales}</h5>
+							<!-- Aca usamos los datos del derived store directo en el HTML -->
+							<h5 class="mb-2 text-2xl font-bold text-gray-600">$ {$todaySales}</h5>
 							<p class="mb-0">
 								{#if yesterdayPercentage === -100}
 									<span class="font-bold leading-normal text-gray-500">0%</span>
@@ -74,9 +78,9 @@
 							</p>
 						</div>
 					</div>
-					<div class="basis-1/3 text-right">
+					<div class="text-right basis-1/3">
 						<div
-							class="bg-emerald-600 rounded-full text-white shadow shadow-emerald-600 inline-block p-4"
+							class="inline-block p-4 text-white rounded-full shadow bg-emerald-600 shadow-emerald-600"
 						>
 							<Icon class="text-lg" icon="carbon:sales-ops" />
 						</div>
@@ -84,24 +88,24 @@
 				</div>
 			</div>
 
-			<div class="flex flex-col break-words bg-white shadow-xl rounded-lg p-4 basis-3/12">
+			<div class="flex flex-col p-4 break-words bg-white rounded-lg shadow-xl basis-3/12">
 				<div class="flex gap-5">
 					<div class="flex basis-2/3">
 						<div>
 							<p
-								class="mb-0 font-sans font-semibold leading-normal uppercase text-md text-gray-400"
+								class="mb-0 font-sans font-semibold leading-normal text-gray-400 uppercase text-md"
 							>
 								Ventas del mes
 							</p>
-							<h5 class="mb-2 font-bold text-gray-600 text-2xl">$ {$dashboard.monthSales}</h5>
+							<!-- <h5 class="mb-2 text-2xl font-bold text-gray-600">$ {$dashboard.monthSales}</h5> -->
 							<p class="mb-0">
 								<span class="font-bold leading-normal text-indigo-500">+55%</span> desde ayer
 							</p>
 						</div>
 					</div>
-					<div class="basis-1/3 text-right">
+					<div class="text-right basis-1/3">
 						<div
-							class="bg-blue-600 rounded-full text-white shadow shadow-blue-600 inline-block p-4"
+							class="inline-block p-4 text-white bg-blue-600 rounded-full shadow shadow-blue-600"
 						>
 							<Icon class="text-lg" icon="grommet-icons:money" />
 						</div>
@@ -109,24 +113,24 @@
 				</div>
 			</div>
 
-			<div class="flex flex-col break-words bg-white shadow-xl rounded-lg p-4 basis-3/12">
+			<div class="flex flex-col p-4 break-words bg-white rounded-lg shadow-xl basis-3/12">
 				<div class="flex gap-5">
 					<div class="flex basis-2/3">
 						<div>
 							<p
-								class="mb-0 font-sans font-semibold leading-normal uppercase text-md text-gray-400"
+								class="mb-0 font-sans font-semibold leading-normal text-gray-400 uppercase text-md"
 							>
 								Producto del mes
 							</p>
-							<h5 class="mb-2 font-bold text-gray-600 text-2xl">$53,000</h5>
+							<h5 class="mb-2 text-2xl font-bold text-gray-600">$53,000</h5>
 							<p class="mb-0">
 								<span class="font-bold leading-normal text-indigo-500">+55%</span> desde ayer
 							</p>
 						</div>
 					</div>
-					<div class="basis-1/3 text-right">
+					<div class="text-right basis-1/3">
 						<div
-							class="bg-blue-600 rounded-full text-white shadow shadow-blue-600 inline-block p-4"
+							class="inline-block p-4 text-white bg-blue-600 rounded-full shadow shadow-blue-600"
 						>
 							<Icon class="text-lg" icon="grommet-icons:money" />
 						</div>
@@ -134,24 +138,24 @@
 				</div>
 			</div>
 
-			<div class="flex flex-col break-words bg-white shadow-xl rounded-lg p-4 basis-3/12">
+			<div class="flex flex-col p-4 break-words bg-white rounded-lg shadow-xl basis-3/12">
 				<div class="flex gap-5">
 					<div class="flex basis-2/3">
 						<div>
 							<p
-								class="mb-0 font-sans font-semibold leading-normal uppercase text-md text-gray-400"
+								class="mb-0 font-sans font-semibold leading-normal text-gray-400 uppercase text-md"
 							>
 								Producto del mes
 							</p>
-							<h5 class="mb-2 font-bold text-gray-600 text-xl"></h5>
+							<!-- <h5 class="mb-2 text-xl font-bold text-gray-600"></h5> -->
 							<p class="mb-0">
 								<span class="font-bold leading-normal text-indigo-500"></span> ventas
 							</p>
 						</div>
 					</div>
-					<div class="basis-1/3 text-right">
+					<div class="text-right basis-1/3">
 						<div
-							class="bg-indigo-600 rounded-full text-white shadow shadow-indigo-600 inline-block p-4"
+							class="inline-block p-4 text-white bg-indigo-600 rounded-full shadow shadow-indigo-600"
 						>
 							<Icon class="text-lg" icon="fluent-mdl2:product" />
 						</div>
@@ -161,10 +165,10 @@
 		</div>
 
 		<div class="flex h-[400px] gap-5">
-			<div class="basis-8/12 bg-white rounded-lg p-3 shadow-lg">
-				<canvas bind:this={chart}></canvas>
+			<div class="p-3 bg-white rounded-lg shadow-lg basis-8/12">
+				<!-- <canvas bind:this={chart}></canvas> -->
 			</div>
-			<div class="basis-4/12 bg-white rounded-lg shadow-lg">1</div>
+			<div class="bg-white rounded-lg shadow-lg basis-4/12">1</div>
 		</div>
 	</section>
 </div>
