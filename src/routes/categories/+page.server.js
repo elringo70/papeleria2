@@ -20,7 +20,7 @@ export const load = async () => {
 		return { categories: JSON.parse(JSON.stringify(categories)) };
 	} catch (err) {
 		console.log('Error: ', err);
-		error(500, err);
+		error(500, 'Server error');
 	} finally {
 		await dbDisconnect();
 	}
@@ -50,7 +50,7 @@ export const actions = {
 			return { success: true, message: 'Categoría creada' };
 		} catch (err) {
 			console.log('Error: ', err);
-			error(500, err);
+			error(500, 'Server error');
 		} finally {
 			await dbDisconnect();
 		}
@@ -66,12 +66,12 @@ export const actions = {
 				return fail(400, { message: 'La categoría no existe' });
 			}
 
-			await Category.findByIdAndRemove(id);
+			await Category.findByIdAndDelete(id);
 
 			return { success: true };
 		} catch (err) {
 			console.log('Error: ', err);
-			error(500, err);
+			error(500, 'Server error');
 		} finally {
 			await dbDisconnect();
 		}

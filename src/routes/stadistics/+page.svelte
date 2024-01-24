@@ -1,16 +1,18 @@
 <script>
 	import { onMount } from 'svelte';
-	import { store } from './store';
+	import { store, dashboard } from './store';
 	import Chart from 'chart.js/auto';
 	import Icon from '@iconify/svelte';
 
 	/** @type {import('./$types').PageData} */
 	export let data;
 
+	store.setStadistics(data.orders);
 	/** @type {string} */
-	let todaySales;
-	/** @type {string} */
-	let monthSales;
+	$: todaySales = '';
+	/** @type {number} */
+	$: yesterdayPercentage = 0;
+	/** @type {{ product: Object; quantity: number }} */
 	let chart;
 
 	const charData = {
@@ -32,10 +34,7 @@
 	};
 
 	onMount(() => {
-		store.setStadistics(data.orders);
-		todaySales = store.getTodaySales();
-		monthSales = store.getMonthSales();
-
+		store.onLoad();
 		const ctx = chart.getContext('2d');
 		new Chart(ctx, config);
 	});
@@ -58,9 +57,20 @@
 							>
 								Ventas de hoy
 							</p>
-							<h5 class="mb-2 font-bold text-gray-600 text-2xl">$ {todaySales}</h5>
+							<h5 class="mb-2 font-bold text-gray-600 text-2xl">$ {$dashboard.todaySales}</h5>
 							<p class="mb-0">
-								<span class="font-bold leading-normal text-indigo-500">+55%</span> desde ayer
+								{#if yesterdayPercentage === -100}
+									<span class="font-bold leading-normal text-gray-500">0%</span>
+									desde ayer
+								{:else}
+									<span
+										class="font-bold leading-normal {yesterdayPercentage < 0
+											? 'text-red-400'
+											: 'text-indigo-500'}"
+										>{yesterdayPercentage > 0 ? '+' : ''}{yesterdayPercentage}%</span
+									>
+									desde ayer
+								{/if}
 							</p>
 						</div>
 					</div>
@@ -83,7 +93,7 @@
 							>
 								Ventas del mes
 							</p>
-							<h5 class="mb-2 font-bold text-gray-600 text-2xl">$ {monthSales}</h5>
+							<h5 class="mb-2 font-bold text-gray-600 text-2xl">$ {$dashboard.monthSales}</h5>
 							<p class="mb-0">
 								<span class="font-bold leading-normal text-indigo-500">+55%</span> desde ayer
 							</p>
@@ -133,9 +143,9 @@
 							>
 								Producto del mes
 							</p>
-							<h5 class="mb-2 font-bold text-gray-600 text-2xl">$53,000</h5>
+							<h5 class="mb-2 font-bold text-gray-600 text-xl"></h5>
 							<p class="mb-0">
-								<span class="font-bold leading-normal text-indigo-500">+55%</span> desde ayer
+								<span class="font-bold leading-normal text-indigo-500"></span> ventas
 							</p>
 						</div>
 					</div>

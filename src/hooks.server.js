@@ -74,6 +74,9 @@ export async function handle({ event, resolve }) {
 	return response;
 }
 
+/**
+ * @param {string} refreshToken
+ * */
 const refreshTokenFunction = async (refreshToken) => {
 	const url = 'https://securetoken.googleapis.com/v1/token?key=' + FIREBASE_API_KEY;
 

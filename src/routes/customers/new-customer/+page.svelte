@@ -11,6 +11,8 @@
 
 	let isChecked = false;
 	let comboValue = '';
+
+	/** @type {any} */
 	let errors;
 	$: errors;
 
@@ -54,12 +56,18 @@
 		};
 	};
 
-	//Address lookup
+	/** @type {any} */
 	let timer;
 	let comboLoading = false;
 	$: comboLoading;
 
-	let street, number, municipality, city, state, place_id;
+	/** @type {string} */
+	let street,
+		/** @type {string} */ number,
+		/** @type {string} */ municipality,
+		/** @type {string} */ city,
+		/** @type {string} */ state,
+		/** @type {string} */ place_id;
 	$: street = $selectedAddress.street ? $selectedAddress.street : form?.data?.street ?? '';
 	$: number = $selectedAddress.number ? $selectedAddress.number : form?.data?.number ?? '';
 	$: municipality = $selectedAddress.municipality
@@ -69,12 +77,13 @@
 	$: state = $selectedAddress.state ? $selectedAddress.state : form?.data?.state ?? '';
 	$: place_id = $selectedAddress.place_id ? $selectedAddress.place_id : form?.data?.place_id ?? '';
 
-	const holdOnInput = (e) => {
+	/** @param {{ currentTarget: EventTarget}} event */
+	const holdOnInput = (event) => {
 		comboLoading = true;
 
 		clearTimeout(timer);
 
-		const stringInput = e.target.value;
+		const stringInput = event.currentTarget.value;
 
 		if (stringInput.length > 3) {
 			timer = setTimeout(async () => {

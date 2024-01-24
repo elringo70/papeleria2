@@ -168,8 +168,8 @@
 												{$selectedTicket.customer === 'walk-in'
 													? 'Sin registro'
 													: $selectedTicket.customer?.name +
-													  ' ' +
-													  $selectedTicket.customer?.lastName}
+														' ' +
+														$selectedTicket.customer?.lastName}
 											</p>
 											<p>
 												<b>Numero:</b>
@@ -181,8 +181,8 @@
 												<b>Dirección:</b>
 												{$selectedTicket.customer?.address
 													? $selectedTicket.customer?.address?.street +
-													  ' ' +
-													  $selectedTicket.customer?.address?.number
+														' ' +
+														$selectedTicket.customer?.address?.number
 													: 'Sin direcciónn'}
 											</p>
 										</div>
@@ -274,13 +274,18 @@
 				</div>
 
 				<div class="col-span-1 row-span-1 border-2 border-gray-200 p-3">
-					<form class="h-full w-full" method="post" on:submit|preventDefault={handleSubmit}>
+					<form
+						action="?/cancelOrder"
+						class="h-full w-full"
+						method="post"
+						on:submit|preventDefault={handleSubmit}
+					>
 						<div class="flex h-full w-full gap-5">
 							<input type="hidden" name="id" value={$selectedTicket._id} />
 							<button
 								type="submit"
 								class="w-full rounded bg-red-500 py-2 text-white shadow shadow-red-500 hover:bg-red-600"
-								formaction="?/cancelOrder">Cancelar Venta</button
+								>Cancelar Venta</button
 							>
 							<button
 								type="button"

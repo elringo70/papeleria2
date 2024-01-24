@@ -12,13 +12,19 @@
 
 	import { firstUppercase } from '$utils/stringUtils';
 
+	/** @type {import('./$types').PageData} */
 	export let data;
+
+	/** @type {import('./$types').ActionData} */
 	export let form;
+
+	/** @type {any} */
 	let errors;
 	$: errors;
 
 	let confirm = false;
 	let loading = false;
+	/** @type {any} */
 	let timer;
 
 	const alertObject = {

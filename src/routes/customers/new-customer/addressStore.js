@@ -1,18 +1,37 @@
 import { writable, get } from 'svelte/store';
 
+/**
+ * @typedef {Object} Address
+ * @property {string} street
+ * @property {string} number
+ * @property {string} [municipality]
+ * @property {string} [city]
+ * @property {string} [state]
+ * @property {string} [place_id]
+ */
+
+/** @type {Address} */
 const initialValuesSelectedAddress = {
 	street: '',
+	number: '',
 	municipality: '',
 	city: '',
 	state: '',
 	place_id: ''
 };
 
-export const selectedAddress = writable({});
+/**
+ * writable store for handling a string variable.
+ * @type {import('svelte/store').Writable<Address>}
+ */
+export const selectedAddress = writable(initialValuesSelectedAddress);
 
 function addressStore() {
-	const { subscribe, set, update } = writable([]);
+	const { subscribe, set } = writable([]);
 
+	/**
+	 * @param {string} string
+	 */
 	const fetchAddress = async (string) => {
 		let url = `https://nominatim.openstreetmap.org/?addressdetails=1&q=${string}&format=json&limit=5`;
 
@@ -27,7 +46,11 @@ function addressStore() {
 		}
 	};
 
+	/**
+	 * @param {MouseEvent} e
+	 */
 	const selectAddress = (e) => {
+		if (!e.target) return;
 		const index = e.target.value;
 
 		const addresses = get(address);

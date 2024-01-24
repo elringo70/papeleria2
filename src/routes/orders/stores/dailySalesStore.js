@@ -18,8 +18,11 @@ function createDailySalesStore() {
 					(ticket) => ticket.orderStatus === 'completed'
 				);
 
-				tickets[notCancelledTicket].selectedTicket = true;
-				selectedTicket.set(tickets[0]);
+				if (Math.sign(notCancelledTicket) > 0) {
+					tickets[notCancelledTicket].selectedTicket = true;
+					selectedTicket.set(tickets[0]);
+				}
+
 				return [...tickets];
 			} else {
 				return [];
