@@ -204,7 +204,7 @@
 				</tbody>
 			</table>
 		</div>
-		<div>
+		<div class="mt-auto">
 			<Pagination {currentPage} {totalPages} />
 		</div>
 	</div>

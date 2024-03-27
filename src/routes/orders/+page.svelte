@@ -21,9 +21,13 @@
 	/** @type {import('./$types').ActionData} */
 	export let form;
 
+	/** @type {HTMLElement}*/
 	let checkoutModal;
+	/** @type {HTMLElement}*/
 	let searchProductModal;
+	/** @type {HTMLElement}*/
 	let elementCustomerSearchModal;
+	/** @type {HTMLElement}*/
 	let dailySalesModal;
 	let bindInputElement;
 
@@ -94,6 +98,8 @@
 		dailySalesModal = document.getElementById('dailySalesModal');
 
 		setModals();
+
+		focusInputElement();
 	});
 
 	setContext('selectedTicket', selectedTicket);
