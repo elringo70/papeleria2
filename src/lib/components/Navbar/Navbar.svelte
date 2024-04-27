@@ -22,7 +22,8 @@
 			dropdown: {
 				links: [
 					{ name: 'Crear producto', href: '/products/new-product' },
-					{ name: 'Ver productos', href: '/products/get-products' }
+					{ name: 'Ver productos', href: '/products/get-products' },
+					{ name: 'Buscar producto', href: '/products/search-product' }
 				],
 				isOpen: false
 			}
@@ -81,7 +82,7 @@
 				<div class="flex flex-shrink-0 items-center">
 					<div class="avatar">
 						<div class="h-8 w-auto lg:block rounded-full">
-							<img src="../../logo.jpg" alt="Your Company"/>
+							<img src="../../logo.jpg" alt="Your Company" />
 						</div>
 					</div>
 				</div>

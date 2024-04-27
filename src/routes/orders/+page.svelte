@@ -29,6 +29,7 @@
 	let elementCustomerSearchModal;
 	/** @type {HTMLElement}*/
 	let dailySalesModal;
+  /** @type {HTMLElement}*/
 	let bindInputElement;
 
 	const onKeyDown = (event) => {

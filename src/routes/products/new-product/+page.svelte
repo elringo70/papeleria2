@@ -101,7 +101,7 @@
 	></script>
 </svelte:head>
 
-<section class="flex h-[calc(100vh-66px)] items-center justify-center bg-gray-100">
+<section class="flex h-[calc(100vh-56px)] items-center justify-center bg-gray-100">
 	<div class="container mx-auto w-8/12 rounded bg-white p-5 shadow-lg">
 		<div class="mb-7">
 			<h3 class="text-2xl font-semibold text-gray-800">Producto nuevo</h3>

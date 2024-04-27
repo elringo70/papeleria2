@@ -15,7 +15,6 @@
 	let timer;
 
 	const tickets = getContext('tickets');
-	const focusInputElement = getContext('focusInputElement');
 
 	const handleSubmit = ({ formData, cancel }) => {
 		const { product } = Object.fromEntries(formData);
@@ -149,18 +148,18 @@
 					</thead>
 					<tbody class="text-xs text-gray-700">
 						{#each $searchProductStore as product, index}
-							{#if product?.stock?.stock > 0}
+							{#if product?.stock?.stock > 0 || product?.requiredStock === false}
 								<tr
 									class={$selectedProduct === index
 										? 'cursor-default select-none border-b bg-blue-500 text-white hover:bg-blue-600'
-										: 'cursor-default select-none border-b bg-white py-1'}
+										: 'cursor-default select-none border-b bg-white py-1 hover:bg-gray-100'}
 									on:click={() => handleOnClickProduct(index)}
 									on:dblclick={() => selectProduct(product)}
 								>
 									<td class="px-3 py-2">{product.product}</td>
 									<td class="px-3 py-2">{product.category}</td>
 									<td class="px-3 py-2">$ {product.price}</td>
-									<td class="px-3 py-2">{product?.stock?.stock}</td>
+									<td class="px-3 py-2">{product.requiredStock ? product?.stock?.stock : ''}</td>
 									<td class="px-3 py-2">$ {product.wholesale}</td>
 									<td class="flex h-full w-full items-center justify-center px-3 py-2"
 										><a href="/products/{product._id}"><Icon icon="tabler:edit" /></a></td
