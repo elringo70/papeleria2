@@ -14,6 +14,7 @@
 	let form;
 	let timer;
 
+	const focusInputElement = getContext('focusInputElement');
 	const tickets = getContext('tickets');
 
 	const handleSubmit = ({ formData, cancel }) => {
@@ -81,6 +82,20 @@
 		resetTable();
 	};
 
+	const selectOnEnter = (event) => {
+		if (typeof $selectedProduct === 'number') {
+			switch (event.key) {
+				case 'Enter':
+					event.preventDefault();
+					selectProduct($searchProductStore[$selectedProduct]);
+					focusInputElement();
+					break;
+				default:
+					break;
+			}
+		}
+	};
+
 	onMount(() => {
 		searchProductModal = document.getElementById('searchProductModal');
 
@@ -97,6 +112,8 @@
 		resetTable();
 	});
 </script>
+
+<svelte:window on:keydown={selectOnEnter} />
 
 <dialog id="searchProductModal" class="modal">
 	<div class="modal-box w-5/6 max-w-none rounded-none bg-white">

@@ -21,17 +21,21 @@
 	/** @type {import('./$types').ActionData} */
 	export let form;
 
-	/** @type {HTMLElement}*/
+	/** @type {HTMLElement} */
 	let checkoutModal;
-	/** @type {HTMLElement}*/
+	/** @type {HTMLElement} */
 	let searchProductModal;
-	/** @type {HTMLElement}*/
+	/** @type {HTMLElement} */
 	let elementCustomerSearchModal;
-	/** @type {HTMLElement}*/
+	/** @type {HTMLElement} */
 	let dailySalesModal;
-  /** @type {HTMLElement}*/
-	let bindInputElement;
+	/** @type {HTMLInputElement} bindInputElement */ 
+  let bindInputElement;
 
+	/**
+	 * @param {KeyboardEvent} event
+	 * @return {void}
+	 */
 	const onKeyDown = (event) => {
 		switch (event.key) {
 			case 'F1':
@@ -97,6 +101,7 @@
 		searchProductModal = document.getElementById('searchProductModal');
 		elementCustomerSearchModal = document.getElementById('customerSearchModal');
 		dailySalesModal = document.getElementById('dailySalesModal');
+		bindInputElement = document.getElementById('product');
 
 		setModals();
 

@@ -136,7 +136,7 @@
 						<th class="px-6 py-3 text-center">Acciones</th>
 					</tr>
 				</thead>
-				<tbody class="overflow-y-auto text-sm font-light text-gray-600">
+				<tbody class="text-sm font-light text-gray-600">
 					{#each data.products as product}
 						<tr class="border-b border-gray-200 bg-gray-50 hover:bg-gray-100">
 							<td class="px-5 py-2 text-left">

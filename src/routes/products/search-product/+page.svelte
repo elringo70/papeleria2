@@ -5,8 +5,10 @@
 	import { searchProductStore } from './store';
 	import Icon from '@iconify/svelte';
 
+	/** @type {HTMLInputElement} inputProduct */
 	let inputProduct;
 
+	/** @type {HTMLFormElement} form */
 	let form;
 	let timer;
 

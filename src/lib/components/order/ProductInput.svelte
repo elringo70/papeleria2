@@ -1,6 +1,6 @@
 <script>
 	import { enhance } from '$app/forms';
-	import { getContext, setContext } from 'svelte';
+	import { getContext } from 'svelte';
 	import { selectedTicket } from '../../../routes/orders/stores/store';
 	import Swal from 'sweetalert2';
 

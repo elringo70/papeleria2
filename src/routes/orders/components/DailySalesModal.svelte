@@ -47,6 +47,7 @@
 	const closeDailySalesModal = () => {
 		reset();
 		dailySalesModal.close();
+		focusInputElement();
 	};
 
 	const reset = () => {

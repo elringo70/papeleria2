@@ -1,7 +1,7 @@
 import { error, fail } from '@sveltejs/kit';
 import { Product } from '$models/products';
 import { User } from '$models/users';
-import { dbConnect, dbDisconnect } from '$utils/db';
+import { dbConnect, dbConnection, dbDisconnect } from '$utils/db';
 import { findProductSchema, orderSchema } from './orderValidation.js';
 import { validateData } from '$utils/utils';
 import { Order } from '$models/orders';
@@ -87,6 +87,7 @@ export const actions = {
 	},
 	submitOrder: async ({ request }) => {
 		const phoneRegex = new RegExp(/^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/);
+		const session = await dbConnection.startSession();
 
 		try {
 			await dbConnect();
@@ -206,16 +207,21 @@ export const actions = {
 				}
 			}
 
-			await Product.bulkWrite(bulkOperation);
+			session.startTransaction();
+			await Product.bulkWrite(bulkOperation, { session });
 
 			const order = new Order(body);
-			await order.save();
+			await order.save({ session });
+
+			await session.commitTransaction();
 
 			return { success: true };
 		} catch (err) {
 			console.log('Error: ', err);
+			await session.abortTransaction();
 			error(500);
 		} finally {
+			session.endSession();
 			await dbDisconnect();
 		}
 	}
