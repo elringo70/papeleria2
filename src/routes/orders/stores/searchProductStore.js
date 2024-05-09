@@ -6,6 +6,10 @@ function createSearchProductStore() {
 	const { subscribe, set, update } = writable([]);
 
 	const setProducts = (products) => {
+		if (products.length > 0) {
+			set(products);
+			selectedProduct.set(0);
+		}
 		set(products);
 	};
 
@@ -14,6 +18,7 @@ function createSearchProductStore() {
 		set([]);
 	};
 
+	/** @param {number} index */
 	const selectProduct = (index) => {
 		update((store) => {
 			selectedProduct.set(index);

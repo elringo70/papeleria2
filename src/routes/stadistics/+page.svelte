@@ -19,7 +19,7 @@
 		labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio'],
 		datasets: [
 			{
-				label: 'My First Dataset',
+				label: 'Ventas últimos 5 meses',
 				data: [65, 59, 80, 81, 56, 55, 40],
 				fill: false,
 				borderColor: 'rgb(75, 192, 192)',
@@ -141,7 +141,7 @@
 							<p
 								class="mb-0 font-sans font-semibold leading-normal uppercase text-md text-gray-400"
 							>
-								Producto del mes
+								producto del mes
 							</p>
 							<h5 class="mb-2 font-bold text-gray-600 text-xl"></h5>
 							<p class="mb-0">
@@ -164,7 +164,16 @@
 			<div class="basis-8/12 bg-white rounded-lg p-3 shadow-lg">
 				<canvas bind:this={chart}></canvas>
 			</div>
-			<div class="basis-4/12 bg-white rounded-lg shadow-lg">1</div>
+			<div class="basis-4/12 bg-white rounded-lg shadow-lg">
+				<div class="p-5">
+					<p class="mb-0 fontsans font-semibold leading-normal uppercase text-md text-gray-400">
+						Top productos
+					</p>
+					<p class="mb-0 fontsans font-semibold leading-normal text-2xl text-gray-600">
+						Top 10 productos del mes
+					</p>
+				</div>
+			</div>
 		</div>
 	</section>
 </div>
