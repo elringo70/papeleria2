@@ -30,7 +30,8 @@
 		},
 		{ name: 'Categorías', href: '/categories', active: false },
 		{ name: 'Estadísticas', href: '/stadistics', active: false },
-		{ name: 'Test', href: '/test', active: false }
+		{ name: 'Test', href: '/test', active: false },
+		{ name: 'Corte', href: '/proof', active: false }
 	];
 </script>
 

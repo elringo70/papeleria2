@@ -13,6 +13,7 @@
 	$: errors;
 
 	let loading = false;
+	console.log(data.categories);
 
 	const submitProduct = ({ form, data }) => {
 		loading = true;

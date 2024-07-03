@@ -5,7 +5,6 @@ export const userSchema = new Schema(
 	{
 		phone: {
 			type: String,
-			unique: true,
 			trim: true,
 			index: true,
 			min: 10,
@@ -78,8 +77,42 @@ export const userSchema = new Schema(
 		}
 	},
 	{
-		timestamps: true
+		timestamps: true,
+		discriminatorKey: 'user',
+		collection: 'users'
 	}
 );
 
 export const User = models.User || model('User', userSchema);
+
+User.discriminator(
+	'Customer',
+	new Schema(
+		{
+			balance: {
+				type: new Schema({
+					balance: {
+						pendingBalance: {
+							type: Number,
+							default: false,
+							required: true
+						},
+						dueBalance: {
+							type: Boolean,
+							default: 0,
+							required: true
+						}
+					}
+				}),
+				required: false
+			},
+			userType: {
+				type: String,
+				default: 'CUSTOMER'
+			}
+		},
+		{ timestamps: true }
+	)
+);
+
+export const Customer = models.Customer || model('Customer');

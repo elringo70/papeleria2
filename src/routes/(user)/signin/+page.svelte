@@ -9,6 +9,17 @@
 	$: errors;
 	let disabled = false;
 
+	/**
+	 * @typedef loginErrors
+	 * @type {object}
+	 * @property {string} auth/wrong-password
+	 */
+
+	/** @type {loginErrors} */
+	const loginErrors = {
+		'auth/wrong-password': 'Contraseña Incorrecta'
+	};
+
 	/** @param {{ currentTarget: EventTarget & HTMLFormElement}} event */
 	async function loginWithEmailAndPassword(event) {
 		disabled = true;
@@ -50,13 +61,12 @@
 
 			applyAction(result);
 		} catch (error) {
-			console.log(error);
 			const firebaseErrors = ['auth/user-not-found'];
 
 			Swal.fire({
 				icon: 'error',
-				title: 'Error',
-				text: 'Error'
+				title: 'Error al loguearse',
+				text: loginErrors[error.code]
 			});
 		}
 
@@ -112,13 +122,16 @@
 
 			<form method="post" autocomplete="off" on:submit|preventDefault={loginWithEmailAndPassword}>
 				<Input placeholder="Correo electrónico" name="email" type="email" required={true} />
-				<Input placeholder="Contraseña" name="password" type="password" required={true}/>
+				<Input placeholder="Contraseña" name="password" type="password" required={true} />
 
-				<button
-					type="submit"
-					class="w-full rounded bg-indigo-600 px-3 py-2 text-white hover:bg-indigo-500"
-					{disabled}>Ingresar</button
-				>
+				<button type="submit" class="btn btn-block" {disabled}>
+					{#if disabled}
+						<span class="loading loading-dots loading-md"></span>
+						loading
+					{:else}
+						Ingresar
+					{/if}
+				</button>
 			</form>
 			<div class="text-grey-dark mt-4 text-center text-sm">
 				<a class="border-grey-dark text-grey-dark border-b no-underline" href="/signup">

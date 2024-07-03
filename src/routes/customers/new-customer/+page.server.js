@@ -1,5 +1,5 @@
 import { error, fail } from '@sveltejs/kit';
-import { User } from '$models/users';
+import { User, Customer } from '$models/users';
 import { dbConnect, dbDisconnect } from '$utils/db';
 import { validateData } from '$utils/utils';
 import { customerSchema } from './customerSchema';

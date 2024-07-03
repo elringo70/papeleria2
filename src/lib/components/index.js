@@ -11,6 +11,7 @@ import TableModal from './TableModal.svelte';
 import Pagination from './Pagination.svelte';
 import InputFile from './InputFile.svelte';
 import CheckboxPressed from './CheckboxPressed.svelte';
+import Date from './Date.svelte';
 
 export {
 	Alert,
@@ -25,5 +26,6 @@ export {
 	TableModal,
 	Pagination,
 	InputFile,
-	CheckboxPressed
+	CheckboxPressed,
+	Date
 };

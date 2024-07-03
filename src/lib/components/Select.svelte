@@ -9,13 +9,16 @@
 	export let valueOption;
 
 	export let value;
-	export let errors;
+	export let errors = null;
 </script>
 
 <div class="form-control mb-3 w-full">
-	<label class="mb-2 block text-sm font-bold text-gray-700" for={name}>
-		{label}
-	</label>
+	{#if label}
+		<label class="mb-2 block text-sm font-bold uppercase leading-normal text-gray-600" for={name}>
+			{label}
+		</label>
+	{/if}
+
 	<select
 		class={`w-full rounded border border-gray-300 bg-white py-2 px-3 text-gray-700 focus:border-gray-500 focus:outline-none ${
 			errors ? 'border-red-400' : ''
