@@ -13,7 +13,7 @@
 	export let data;
 
 	/** @type {HTMLElement} */
-	let getCustomerModal
+	let getCustomerModal;
 	let errors;
 	$: errors;
 
@@ -71,15 +71,15 @@
 		}
 	}
 
-	const getCustomer =()=>{
+	const getCustomer = () => {
 		if (getCustomerModal) {
-			getCustomerModal.showModal()
+			getCustomerModal.showModal();
 		}
-	}
+	};
 
-	onMount(()=>{
+	onMount(() => {
 		getCustomerModal = document.getElementById('get-customer-modal');
-	})
+	});
 </script>
 
 <svelte:head>
@@ -140,7 +140,10 @@
 									</div>
 								</td>
 								<td class="px-6 py-3 text-center">
-									<Pill pill="success" text="Corriente" />
+									<Pill
+										pill={customer.balance.pendingBalance ? 'error' : 'success'}
+										text={customer.balance.pendingBalance ? 'Saldo pendiente' : 'Corriente'}
+									/>
 								</td>
 								<td class="px-6 py-3">
 									<form action="?/delete" method="post" on:submit|preventDefault={deleteCustomer}>

@@ -1,11 +1,11 @@
 import { error, fail } from '@sveltejs/kit';
-import { User } from '$models/users';
+import { Customer } from '$models/users';
 import { dbConnect, dbDisconnect } from '$utils/db';
 
 export const load = async () => {
 	try {
 		await dbConnect();
-		const customers = await User.find({});
+		const customers = await Customer.find({});
 
 		return { customers: JSON.parse(JSON.stringify(customers)) };
 	} catch (err) {
@@ -22,12 +22,12 @@ export const actions = {
 			await dbConnect();
 			const { id } = Object.fromEntries(await request.formData());
 
-			const findCustomer = await User.findById(id).exec();
+			const findCustomer = await Customer.findById(id).exec();
 			if (!findCustomer) {
 				return fail(404, { message: 'El cliente no existe' });
 			}
 
-			await User.findByIdAndDelete(id);
+			await Customer.findByIdAndDelete(id);
 
 			return { success: true };
 		} catch (err) {

@@ -8,6 +8,7 @@ import { writable, get } from 'svelte/store';
  * @prop {number} eTransfer
  * @prop {number} total
  * @prop {number} customerPayment
+ * @prop {number} dueBalance
  */
 
 /** @type {Payment} */
@@ -16,7 +17,8 @@ const initialValues = {
 	creditDebit: 0,
 	eTransfer: 0,
 	total: 0,
-	customerPayment: 0
+	customerPayment: 0,
+	dueBalance: 0
 };
 
 const checkoutModalStorage = writable(

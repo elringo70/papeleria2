@@ -22,6 +22,7 @@
 		$paymentMethodsStore.cash || $paymentMethodsStore.creditDebit || $paymentMethodsStore.eTransfer;
 
 	const handleSubmit = ({ formData, cancel }) => {
+		console.log(Object.fromEntries(formData));
 		const { status, delivery } = Object.fromEntries(formData);
 
 		checkoutModalStore.calculateTotal();
@@ -39,12 +40,16 @@
 			switch (result.type) {
 				case 'success':
 					checkoutModal.close();
-					tickets.completeOrder();
+					completeOrder();
 					resetModal();
 					break;
 			}
 			missingTotal = false;
 		};
+	};
+
+	const completeOrder = () => {
+		tickets.completeOrder();
 	};
 
 	const resumeOrder = () => {
@@ -180,6 +185,20 @@
 									/>
 								</div>
 							</div>
+
+							<div class="flex gap-5">
+								<div class="mb-3 flex basis-1/3 items-end justify-end">
+									<p class="text-xl font-medium text-gray-700">Saldo pendiente</p>
+								</div>
+								<div class="basis-2/3">
+									<input
+										name="pending-balance"
+										type="checkbox"
+										class="checkbox checkbox-error border-gray-300"
+									/>
+									<input name="due-balance" type="hidden" value={$checkoutModalStore.dueBalance} />
+								</div>
+							</div>
 						</div>
 
 						<div>
@@ -293,7 +312,7 @@
 		</form>
 	</div>
 </dialog>
-  
+
 <style>
 	input:checked + label {
 		box-shadow:

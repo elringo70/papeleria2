@@ -65,12 +65,6 @@ export const userSchema = new Schema(
 			),
 			required: false
 		},
-		userType: {
-			type: String,
-			required: true,
-			uppercase: true,
-			trim: true
-		},
 		active: {
 			type: Boolean,
 			required: true
@@ -85,34 +79,22 @@ export const userSchema = new Schema(
 
 export const User = models.User || model('User', userSchema);
 
-User.discriminator(
-	'Customer',
-	new Schema(
-		{
-			balance: {
-				type: new Schema({
-					balance: {
-						pendingBalance: {
-							type: Number,
-							default: false,
-							required: true
-						},
-						dueBalance: {
-							type: Boolean,
-							default: 0,
-							required: true
-						}
-					}
-				}),
-				required: false
+const customerSchema = new Schema({
+	balance: {
+		type: new Schema({
+			pendingBalance: {
+				type: Boolean,
+				default: false
 			},
-			userType: {
-				type: String,
-				default: 'CUSTOMER'
+			dueBalance: {
+				type: Number,
+				default: 0
 			}
-		},
-		{ timestamps: true }
-	)
-);
+		})
+	}
+});
 
-export const Customer = models.Customer || model('Customer');
+export const Customer =
+	User.discriminators != undefined
+		? User.discriminators['Customer']
+		: User.discriminator('Customer', customerSchema);

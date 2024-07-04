@@ -87,8 +87,8 @@ export const actions = {
 	},
 	submitOrder: async ({ request }) => {
 		const phoneRegex = new RegExp(/^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/);
-		const session = await dbConnection.startSession();
 
+		const session = await dbConnection.startSession();
 		try {
 			await dbConnect();
 
@@ -221,7 +221,7 @@ export const actions = {
 			await session.abortTransaction();
 			error(500);
 		} finally {
-			session.endSession();
+			await session.endSession();
 			await dbDisconnect();
 		}
 	}

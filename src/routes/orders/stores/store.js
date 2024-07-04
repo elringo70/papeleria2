@@ -24,6 +24,7 @@ const initialValues = [
   Selected ticket to be able to get information from each ticket and 
   displayed Ticket Detail and Ticket Resume
 */
+
 export const selectedTicket = writable(initialValues[0]);
 
 /*

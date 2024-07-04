@@ -1,5 +1,5 @@
 import { error, fail } from '@sveltejs/kit';
-import { User, Customer } from '$models/users';
+import { Customer } from '$models/users';
 import { dbConnect, dbDisconnect } from '$utils/db';
 import { validateData } from '$utils/utils';
 import { customerSchema } from './customerSchema';
@@ -28,6 +28,10 @@ export const actions = {
 							place_id: form.get('place_id')
 						}
 					}),
+				balance: {
+					pendingBalance: 0,
+					dueBalance: false
+				},
 				userType: 'CUSTOMER',
 				active: true
 			};
@@ -39,12 +43,12 @@ export const actions = {
 				});
 			}
 
-			const findCustomer = await User.findOne({ phone: body.phone }).exec();
+			const findCustomer = await Customer.findOne({ phone: body.phone }).exec();
 			if (findCustomer) {
 				return fail(400, { message: 'El número ya existe' });
 			}
 
-			const customer = new User(body);
+			const customer = new Customer(body);
 			await customer.save();
 
 			return { success: true };
