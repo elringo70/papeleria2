@@ -22,7 +22,6 @@
 		$paymentMethodsStore.cash || $paymentMethodsStore.creditDebit || $paymentMethodsStore.eTransfer;
 
 	const handleSubmit = ({ formData, cancel }) => {
-		console.log(Object.fromEntries(formData));
 		const { status, delivery } = Object.fromEntries(formData);
 
 		checkoutModalStore.calculateTotal();
@@ -46,6 +45,10 @@
 			}
 			missingTotal = false;
 		};
+	};
+
+	const setPendingBalance = () => {
+		console.log($checkoutModalStore);
 	};
 
 	const completeOrder = () => {
@@ -195,8 +198,8 @@
 										name="pending-balance"
 										type="checkbox"
 										class="checkbox checkbox-error border-gray-300"
+										on:change={setPendingBalance}
 									/>
-									<input name="due-balance" type="hidden" value={$checkoutModalStore.dueBalance} />
 								</div>
 							</div>
 						</div>
@@ -302,6 +305,7 @@
 			/>
 			<input type="hidden" name="customer" value={$selectedTicket.customer.phone} />
 			<input type="hidden" name="total" value={$selectedTicket.total} />
+			<input name="due-balance" type="hidden" value={$checkoutModalStore.dueBalance} />
 			{#each $selectedTicket.products as product, i}
 				<input
 					type="hidden"

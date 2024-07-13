@@ -42,9 +42,12 @@ function createCheckouModalStore() {
 	};
 
 	const calculateTotal = () => {
+		calculateTotal();
+
 		update((store) => ({
 			...store,
-			customerPayment: store.cash + store.creditDebit + store.eTransfer
+			customerPayment: store.cash + store.creditDebit + store.eTransfer,
+			dueBalance: store.total - (store.cash + store.creditDebit + store.eTransfer)
 		}));
 	};
 
