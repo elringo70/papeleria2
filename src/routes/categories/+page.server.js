@@ -5,75 +5,88 @@ import { z } from 'zod';
 import { validateData } from '$utils/utils';
 
 const categorySchema = z.object({
-	name: z
-		.string({ required_error: 'Ingrese un nombre de categoría' })
-		.min(3, { message: 'Ingrese un nombre de categoría' })
-		.max(64, { message: 'Nombre demasiado largo' })
-		.trim(),
-	active: z.boolean().optional()
+  name: z
+    .string({ required_error: 'Ingrese un nombre de categoría' })
+    .min(3, { message: 'Ingrese un nombre de categoría' })
+    .max(64, { message: 'Nombre demasiado largo' })
+    .trim(),
+  subCategories: z.any(),
+  active: z.boolean().optional()
 });
 
 export const load = async () => {
-	try {
-		await dbConnect();
-		const categories = await Category.find().sort({ name: 'asc' });
-		return { categories: JSON.parse(JSON.stringify(categories)) };
-	} catch (err) {
-		console.log('Error: ', err);
-		error(500, 'Server error');
-	} finally {
-		await dbDisconnect();
-	}
+  try {
+    await dbConnect();
+    const categories = await Category.find().sort({ name: 'asc' });
+    return { categories: JSON.parse(JSON.stringify(categories)) };
+  } catch (err) {
+    console.log('Error: ', err);
+    error(500, 'Server error');
+  } finally {
+    await dbDisconnect();
+  }
 };
 
 export const actions = {
-	post: async ({ request }) => {
-		try {
-			await dbConnect();
+  post: async ({ request }) => {
+    try {
+      await dbConnect();
+      const form = await request.formData()
 
-			const { formData, errors } = await validateData(await request.formData(), categorySchema);
+      const { formData, errors } = await validateData(form, categorySchema);
+      const data = Object.fromEntries(form)
 
-			if (errors) {
-				return fail(401, {
-					data: formData,
-					errors: errors.fieldErrors
-				});
-			}
+      const subCategories = []
+      for (const [key, value] of Object.entries(data)) {
+        if (key.includes('subCategories')) subCategories.push(value)
+      }
 
-			const findCategory = await Category.findOne({ name: formData.name });
-			if (findCategory) {
-				return fail(400, { message: 'La categoría ya existe' });
-			}
+      const body = {
+        name: data.name,
+        subCategories
+      }
 
-			const category = new Category(formData);
-			await category.save();
-			return { success: true, message: 'Categoría creada' };
-		} catch (err) {
-			console.log('Error: ', err);
-			error(500, 'Server error');
-		} finally {
-			await dbDisconnect();
-		}
-	},
+      if (errors) {
+        return fail(401, {
+          data: formData,
+          errors: errors.fieldErrors
+        });
+      }
 
-	delete: async ({ request }) => {
-		try {
-			await dbConnect();
-			const { id } = Object.fromEntries(await request.formData());
+      const findCategory = await Category.findOne({ name: form.name });
+      if (findCategory) {
+        return fail(400, { message: 'La categoría ya existe' });
+      }
 
-			const findCategory = await Category.findById(id);
-			if (!findCategory) {
-				return fail(400, { message: 'La categoría no existe' });
-			}
+      const category = new Category(body);
+      await category.save();
+      return { success: true, message: 'Categoría creada' };
+    } catch (err) {
+      console.log('Error: ', err);
+      error(500, 'Server error');
+    } finally {
+      await dbDisconnect();
+    }
+  },
 
-			await Category.findByIdAndDelete(id);
+  delete: async ({ request }) => {
+    try {
+      await dbConnect();
+      const { id } = Object.fromEntries(await request.formData());
 
-			return { success: true };
-		} catch (err) {
-			console.log('Error: ', err);
-			error(500, 'Server error');
-		} finally {
-			await dbDisconnect();
-		}
-	}
+      const findCategory = await Category.findById(id);
+      if (!findCategory) {
+        return fail(400, { message: 'La categoría no existe' });
+      }
+
+      await Category.findByIdAndDelete(id);
+
+      return { success: true };
+    } catch (err) {
+      console.log('Error: ', err);
+      error(500, 'Server error');
+    } finally {
+      await dbDisconnect();
+    }
+  }
 };

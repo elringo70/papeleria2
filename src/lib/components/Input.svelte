@@ -9,6 +9,7 @@
 	export let maxlength = 100;
 	export let minlength = 0;
 	export let pattern = null;
+	/** @type {null|string} */
 	export let bindElement = null;
 	export let width = 'w-full';
 	export let tabindex = '';
@@ -16,6 +17,8 @@
 	export let onChange = () => {};
 	export let onKeyup = () => {};
 	export let onInput = () => {};
+	export let onKeyPressed = () => {};
+	export let onKeyDown = () => {};
 
 	export let value = '';
 	export let errors = undefined;
@@ -53,6 +56,8 @@
 		on:change={onChange}
 		on:keyup={onKeyup}
 		on:input={onInput}
+		on:keypress={onKeyPressed}
+		on:keydown={onKeyDown}
 	/>
 	{#if errors}
 		<span class="text-xs italic text-red-500">{errors[0]}</span>

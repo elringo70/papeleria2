@@ -12,6 +12,7 @@ import Pagination from './Pagination.svelte';
 import InputFile from './InputFile.svelte';
 import CheckboxPressed from './CheckboxPressed.svelte';
 import Date from './Date.svelte';
+import TagInput from './TagInput.svelte';
 
 export {
 	Alert,
@@ -27,5 +28,6 @@ export {
 	Pagination,
 	InputFile,
 	CheckboxPressed,
-	Date
+	Date,
+  TagInput
 };

@@ -6,17 +6,21 @@
 
 	import Swal from 'sweetalert2/dist/sweetalert2.all.js';
 
-	import { Alert, Input } from '$lib/components';
+	import { Alert, Input, TagInput } from '$lib/components';
 
 	import Icon from '@iconify/svelte';
 
 	import { firstUppercase } from '$utils/stringUtils';
+	import PurchaseSummary from '$lib/components/order/PurchaseSummary.svelte';
 
 	/** @type {import('./$types').PageData} */
 	export let data;
 
 	/** @type {import('./$types').ActionData} */
 	export let form;
+
+	/** @type {string[]} tags*/
+	let tags = [];
 
 	/** @type {any} */
 	let errors;
@@ -34,7 +38,7 @@
 
 	const submitCategory = () => {
 		loading = true;
-		return async ({ result, update }) => {
+		return async ({ result }) => {
 			errors = result.data.errors;
 
 			switch (result.type) {
@@ -47,7 +51,7 @@
 						confirm = false;
 					}, 1500);
 
-					await update();
+					await invalidateAll();
 					break;
 				case 'failure':
 					if (result.status === 400) {
@@ -118,6 +122,8 @@
 	const beforeUnload = () => {
 		clearTimeout(timer);
 	};
+
+	let cleanTags;
 </script>
 
 <svelte:window on:beforeunload={beforeUnload} />
@@ -139,6 +145,9 @@
 					value={form?.data?.name ?? ''}
 					errors={errors?.name}
 				/>
+
+				<TagInput {tags} bind:this={cleanTags} />
+
 				<div class="mt-3">
 					<button
 						type="submit"
@@ -191,8 +200,6 @@
 			{/if}
 		</div>
 	</div>
-
-	<div>test</div>
 </section>
 
 <style>
