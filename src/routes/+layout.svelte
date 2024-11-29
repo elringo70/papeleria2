@@ -11,6 +11,7 @@
 
 	import '../app.css';
 	import Navbar from '$lib/components/Navbar/Navbar.svelte';
+	import Navbar2 from '$lib/components/Navbar/Navbar2.svelte';
 
 	onMount(() => {
 		if (browser) {
@@ -18,7 +19,7 @@
 			return unsubscribe();
 		}
 	});
-	
+
 	setContext('user', data.user);
 </script>
 

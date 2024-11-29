@@ -90,25 +90,7 @@
 					selectProduct($searchProductStore[$selectedProduct]);
 					focusInputElement();
 					break;
-				case 'ArrowUp':
-					event.preventDefault();
-					moveUpDownSelectedProduct(event.key);
-					break;
-				case 'ArrowDown':
-					event.preventDefault();
-					moveUpDownSelectedProduct(event.key);
-					break;
 			}
-		}
-	};
-
-	const moveUpDownSelectedProduct = (event) => {
-		if (event === 'ArrowUp' && $selectedProduct > 0) {
-			$selectedProduct = $selectedProduct - 1;
-		}
-
-		if (event === 'ArrowDown' && $selectedProduct < $searchProductStore.length - 1) {
-			$selectedProduct = $selectedProduct + 1;
 		}
 	};
 
@@ -148,6 +130,7 @@
 					bind:bindElement={inputProduct}
 					onKeyup={holdOnInput}
 				/>
+
 				<button
 					type="submit"
 					class=" rounded bg-indigo-500 px-3 py-2 text-white shadow shadow-indigo-500 hover:bg-indigo-600"

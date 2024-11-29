@@ -1,9 +1,9 @@
 import admin from 'firebase-admin';
-import { GOOGLE_APPLICATION_CREDENTIALS } from '$env/static/private';
+import { FIREBASE_API_KEY } from '$env/static/private';
 
 if (!admin.apps.length) {
 	admin.initializeApp({
-		credential: admin.credential.cert(GOOGLE_APPLICATION_CREDENTIALS),
+		credential: admin.credential.cert(FIREBASE_API_KEY),
 		storageBucket: 'papeleria-be740.appspot.com'
 	});
 }

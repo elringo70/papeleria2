@@ -21,16 +21,16 @@
 	/** @type {import('./$types').ActionData} */
 	export let form;
 
-	/** @type {HTMLElement} */
+	/** @type {HTMLElement | null} checkoutModal */
 	let checkoutModal;
-	/** @type {HTMLElement} */
+	/** @type {HTMLElement | null} searchProductModal */
 	let searchProductModal;
-	/** @type {HTMLElement} */
+	/** @type {HTMLElement | null} elementCustomerSearchModal */
 	let elementCustomerSearchModal;
-	/** @type {HTMLElement} */
+	/** @type {HTMLElement | null} dailySalesModal */
 	let dailySalesModal;
-	/** @type {HTMLInputElement} bindInputElement */ 
-  let bindInputElement;
+	/** @type {HTMLElement | null} bindInputElement */
+	let bindInputElement;
 
 	/**
 	 * @param {KeyboardEvent} event
@@ -91,19 +91,12 @@
 		searchProductModal.showModal();
 	};
 
-	const setModals = () => {
-		const modals = [...document.getElementsByTagName('dialog')];
-		modalsStore.setModals(modals);
-	};
-
 	onMount(() => {
 		checkoutModal = document.getElementById('checkoutModal');
-		searchProductModal = document.getElementById('searchProductModal');
+		//searchProductModal = document.getElementById('searchProductModal');
 		elementCustomerSearchModal = document.getElementById('customerSearchModal');
 		dailySalesModal = document.getElementById('dailySalesModal');
 		bindInputElement = document.getElementById('product');
-
-		setModals();
 
 		focusInputElement();
 	});
@@ -143,7 +136,7 @@
 	</div>
 </section>
 
-<SearchProductModal />
+<SearchProductModal bind:this={searchProductModal} />
 
 <CustomerSearchModal {elementCustomerSearchModal} />
 
