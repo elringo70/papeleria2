@@ -9,8 +9,13 @@
 
 	import { Input } from '$lib/components';
 
+	/** @type {HTMLElement} searchProductModal */
 	let searchProductModal;
+	/** @type {HTMLInputElement | null} inputProduct */
 	let inputProduct;
+	/**
+	 * @type {HTMLFormElement} form
+	 */
 	let form;
 	let timer;
 

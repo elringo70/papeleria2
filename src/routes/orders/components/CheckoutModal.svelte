@@ -9,8 +9,11 @@
 
 	export let Form;
 
+	/** @type {HTMLDialogElement} checkoutModal */
 	let checkoutModal;
+	/** @type {boolean} missingTotal */
 	let missingTotal = false;
+
 	const tickets = getContext('tickets');
 
 	$: customerName = $selectedTicket.customer.name ?? '';
@@ -21,18 +24,27 @@
 	$: submitButtonAvailable =
 		$paymentMethodsStore.cash || $paymentMethodsStore.creditDebit || $paymentMethodsStore.eTransfer;
 
-	const handleSubmit = ({ formData, cancel }) => {
-		const { status, delivery } = Object.fromEntries(formData);
+	const handleSubmit = ({ formData, cancel, action }) => {
+		const namedAction = action.search.replace('?/', '');
 
 		checkoutModalStore.calculateTotal();
 
-		if ($checkoutModalStore.customerPayment < $selectedTicket.total) {
-			missingTotal = true;
-			cancel();
-		} else if (!(status && delivery)) {
-			checkoutModal.close();
-			missingTotal = false;
-			cancel();
+		const { status, delivery } = Object.fromEntries(formData);
+
+		switch (namedAction) {
+			case 'submitOrder':
+				if ($checkoutModalStore.customerPayment < $selectedTicket.total) {
+					missingTotal = true;
+					cancel();
+				} else if (!(status && delivery)) {
+					checkoutModal.close();
+					missingTotal = false;
+					cancel();
+				}
+
+				break;
+			default:
+				break;
 		}
 
 		return async ({ result }) => {
@@ -82,6 +94,12 @@
 			checkoutModalStore.setValue(attribute, 0);
 		}
 		paymentMethodsStore.setValue(attribute);
+	};
+
+	const cancelPurchase = () => {
+		checkoutModal.close();
+		tickets.setDeliveredStatus(false);
+		tickets.setCheckedStatus(false);
 	};
 
 	onMount(() => {
@@ -147,7 +165,7 @@
 								</div>
 								<div class="basis-2/3">
 									<NumberField
-										placeholder="$0.00"
+										placeholder="$ 0.00"
 										name="input-cash"
 										value={$checkoutModalStore.cash === 0 ? '' : $checkoutModalStore.cash}
 										onInput={(e) => onInput(e, 'cash')}
@@ -162,7 +180,7 @@
 								</div>
 								<div class="basis-2/3">
 									<NumberField
-										placeholder="$0.00"
+										placeholder="$ 0.00"
 										name="input-credit-debit"
 										value={$checkoutModalStore.creditDebit === 0
 											? ''
@@ -179,7 +197,7 @@
 								</div>
 								<div class="basis-2/3">
 									<NumberField
-										placeholder="$0.00"
+										placeholder="$ 0.00"
 										name="input-e-transfer"
 										value={$checkoutModalStore.eTransfer === 0 ? '' : $checkoutModalStore.eTransfer}
 										onInput={(e) => onInput(e, 'eTransfer')}
@@ -273,26 +291,24 @@
 				<div class="col-span-1 row-span-1">
 					<div class="flex h-full flex-col justify-end gap-5">
 						{#if $selectedTicket.status && $selectedTicket.delivered}
-							<button
-								type="submit"
-								class="btn btn-block btn-sm rounded-none"
-								disabled={!submitButtonAvailable}>TERMINAR COMPRA</button
+							<button type="submit" class="btn btn-block btn-sm" disabled={!submitButtonAvailable}
+								>TERMINAR COMPRA</button
 							>
-							<button class="btn btn-accent btn-sm rounded-none" disabled={!submitButtonAvailable}
-								>SALDO PENDIENTE</button
+							<button
+								formaction="?/outstanding"
+								class="btn btn-primary btn-sm"
+								disabled={!submitButtonAvailable}>SALDO PENDIENTE</button
 							>
 						{:else}
 							<button
 								type="button"
-								class="btn-info btn btn-block btn-sm rounded-none"
+								class="btn-accent btn btn-sm"
 								on:click={resumeOrder}
 								disabled={!submitButtonAvailable}>RESUMIR COMPRA</button
 							>
 						{/if}
-						<button
-							type="button"
-							on:click={checkoutModal.close()}
-							class="btn-error btn btn-block btn-sm rounded-none">CANCELAR</button
+						<button type="button" on:click={cancelPurchase} class="btn-error btn btn-block btn-sm"
+							>CANCELAR</button
 						>
 					</div>
 				</div>

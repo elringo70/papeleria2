@@ -42,8 +42,6 @@ function createCheckouModalStore() {
 	};
 
 	const calculateTotal = () => {
-		calculateTotal();
-
 		update((store) => ({
 			...store,
 			customerPayment: store.cash + store.creditDebit + store.eTransfer,
@@ -55,11 +53,19 @@ function createCheckouModalStore() {
 		set(initialValues);
 	};
 
+	const setCash = (cash) => {
+		update((store) => ({
+			...store,
+			cash: cash
+		}));
+	};
+
 	return {
 		subscribe,
 		setValue,
 		calculateTotal,
-		reset
+		reset,
+		setCash
 	};
 }
 

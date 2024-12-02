@@ -5,6 +5,11 @@ import { dbConnect, dbConnection, dbDisconnect } from '$utils/db';
 import { findProductSchema, orderSchema } from './orderValidation.js';
 import { validateData } from '$utils/utils';
 import { Order } from '$models/orders';
+import {
+	bulkOperationTransaction,
+	filterProductObject,
+	requiredStock
+} from '$lib/utils/helpers.js';
 
 /** @type {import('./$types').Actions} */
 export const actions = {
@@ -105,55 +110,14 @@ export const actions = {
 
 			const data = Object.fromEntries(form);
 
-			let ids = [];
-			let productStock = {};
-			for (const [key, value] of Object.entries(data)) {
-				if (key.includes('products')) {
-					ids.push(value);
-					const matches = key.match(/\[(.*?)\]/g);
-
-					if (matches) {
-						for (let i = 0; i < matches.length; ++i) {
-							const match = matches[i];
-							const substring = match.substring(1, match.length - 1);
-							productStock = {
-								...productStock,
-								[value]: substring
-							};
-						}
-					}
-				}
-			}
+			const { ids, productStock } = filterProductObject(data);
 
 			const searchProducts = await Product.find({ _id: { $in: ids } });
 
-			let stockIds = [];
-			let updatedProductStock = {};
-			let products = [];
-			searchProducts.forEach((product) => {
-				if (product.requiredStock) {
-					for (const [key, value] of Object.entries(productStock)) {
-						if (
-							product._id.toString() === key.toString() &&
-							Number(value) > Number(product.stock.stock)
-						) {
-							stockIds.push(key);
-						} else if (product._id.toString() === key.toString()) {
-							updatedProductStock = {
-								...updatedProductStock,
-								[key]: Number(product.stock.stock) - Number(value)
-							};
-						}
-					}
-				}
-
-				for (const [key, value] of Object.entries(productStock)) {
-					if (product._id === key) {
-						const insertedProduct = { product: product, quantity: Number(value) };
-						products.push(insertedProduct);
-					}
-				}
-			});
+			const { stockIds, updatedProductStock, products } = requiredStock(
+				searchProducts,
+				productStock
+			);
 
 			if (stockIds.length > 0) {
 				return fail(400, {
@@ -190,22 +154,16 @@ export const actions = {
 				});
 			}
 
-			let bulkOperation = [];
 			if (
 				!(
 					Object.keys(updatedProductStock).length === 0 &&
 					updatedProductStock.constructor === Object
 				)
 			) {
-				for (let [key, value] of Object.entries(updatedProductStock)) {
-					bulkOperation.push({
-						updateOne: {
-							filter: { _id: key },
-							update: { $set: { stock: { stock: value } } }
-						}
-					});
-				}
+				return fail(401, { errors: 'Server error' });
 			}
+
+			const bulkOperation = bulkOperationTransaction(updatedProductStock);
 
 			session.startTransaction();
 			await Product.bulkWrite(bulkOperation, { session });
@@ -222,6 +180,91 @@ export const actions = {
 			error(500);
 		} finally {
 			await session.endSession();
+			await dbDisconnect();
+		}
+	},
+	outstanding: async ({ request }) => {
+		const phoneRegex = new RegExp(/^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/);
+
+		const session = await dbConnection.startSession();
+		try {
+			await dbConnect();
+
+			const form = await request.formData();
+			const { formData, errors } = validateData(form, orderSchema);
+
+			let findCustomer;
+			if (form.get('customer') && phoneRegex.test(form.get('customer'))) {
+				findCustomer = await User.findOne({ phone: form.get('customer') }).exec();
+				if (!findCustomer) findCustomer = form.get('customer');
+			} else {
+				if (form.get('customer') === 'undefined') findCustomer = 'walk-in';
+			}
+
+			const data = Object.fromEntries(form);
+
+			const { ids, productStock } = filterProductObject(data);
+
+			const searchProducts = await Product.find({ _id: { $in: ids } });
+
+			const { stockIds, updatedProductStock, products } = requiredStock(
+				searchProducts,
+				productStock
+			);
+
+			if (stockIds.length > 0) {
+				return fail(400, {
+					ids: stockIds,
+					message: 'Inventario insuficiente'
+				});
+			}
+
+			const paymentCash = form.get('input-cash') ? Number(form.get('input-cash')) : 0;
+			const paymentCreditDebit = form.get('input-credit-debit')
+				? Number(form.get('input-credit-debit'))
+				: 0;
+			const paymentETransfer = form.get('input-e-transfer')
+				? Number(form.get('input-e-transfer'))
+				: 0;
+
+			const body = {
+				paymentCash,
+				paymentCreditDebit,
+				paymentETransfer,
+				customer: findCustomer,
+				products,
+				status: true,
+				delivered: true,
+				customerPayment: paymentCash + paymentCreditDebit + paymentETransfer,
+				change: 0,
+				duePayment:
+					Number(form.get('total')) - (paymentCash + paymentCreditDebit + paymentETransfer),
+				total: Number(form.get('total'))
+			};
+
+			if (errors) {
+				return fail(401, {
+					data: formData,
+					errors: errors.fieldErrors
+				});
+			}
+
+			const bulkOperation = bulkOperationTransaction(updatedProductStock);
+
+			session.startTransaction();
+			await Product.bulkWrite(bulkOperation, { session });
+
+			const order = new Order(body);
+			await order.save({ session });
+
+			await session.commitTransaction();
+
+			return { success: true };
+		} catch (err) {
+			console.log('Error: ', err);
+			await session.abortTransaction();
+			error(500);
+		} finally {
 			await dbDisconnect();
 		}
 	}

@@ -4,7 +4,6 @@
 	/* STORES */
 	import { tickets, selectedTicket } from './stores/store';
 	import { dailySalesStore } from './stores/dailySalesStore';
-	import { modalsStore } from './stores/modalsStore';
 
 	/* COMPONENTS */
 	import PurchaseSummary from '$lib/components/order/PurchaseSummary.svelte';
@@ -21,15 +20,15 @@
 	/** @type {import('./$types').ActionData} */
 	export let form;
 
-	/** @type {HTMLElement | null} checkoutModal */
+	/** @type {HTMLDialogElement | null} checkoutModal */
 	let checkoutModal;
-	/** @type {HTMLElement | null} searchProductModal */
+	/** @type {HTMLDialogElement | null} searchProductModal */
 	let searchProductModal;
-	/** @type {HTMLElement | null} elementCustomerSearchModal */
+	/** @type {HTMLDialogElement | null} elementCustomerSearchModal */
 	let elementCustomerSearchModal;
-	/** @type {HTMLElement | null} dailySalesModal */
+	/** @type {HTMLDialogElement | null} dailySalesModal */
 	let dailySalesModal;
-	/** @type {HTMLElement | null} bindInputElement */
+	/** @type {HTMLInputElement | null} bindInputElement */
 	let bindInputElement;
 
 	/**
@@ -56,7 +55,7 @@
 		if (!bindInputElement) return;
 
 		setTimeout(() => {
-			bindInputElement.focus();
+			bindInputElement?.focus();
 		}, 100);
 	};
 
@@ -75,25 +74,25 @@
 
 	const showPurchaseModal = () => {
 		if ($selectedTicket.products.length === 0) return;
-		checkoutModal.showModal();
+		checkoutModal?.showModal();
 	};
 
 	const showCustomerSearchModal = () => {
-		elementCustomerSearchModal.showModal();
+		elementCustomerSearchModal?.showModal();
 	};
 
 	const showDailySalesModal = async () => {
 		await getDailySales();
-		await dailySalesModal.showModal();
+		await dailySalesModal?.showModal();
 	};
 
 	const showSearchModal = () => {
-		searchProductModal.showModal();
+		searchProductModal?.showModal();
 	};
 
 	onMount(() => {
 		checkoutModal = document.getElementById('checkoutModal');
-		//searchProductModal = document.getElementById('searchProductModal');
+		searchProductModal = document.getElementById('searchProductModal');
 		elementCustomerSearchModal = document.getElementById('customerSearchModal');
 		dailySalesModal = document.getElementById('dailySalesModal');
 		bindInputElement = document.getElementById('product');
@@ -136,7 +135,7 @@
 	</div>
 </section>
 
-<SearchProductModal bind:this={searchProductModal} />
+<SearchProductModal />
 
 <CustomerSearchModal {elementCustomerSearchModal} />
 

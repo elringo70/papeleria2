@@ -12,6 +12,7 @@ const orderSchema = new Schema(
 		paymentCreditDebit: { type: Number, required: true },
 		paymentETransfer: { type: Number, required: true },
 		total: { type: Number, required: true },
+		duePayment: Number,
 		orderStatus: {
 			type: String,
 			enum: ['completed', 'cancelled'],

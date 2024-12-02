@@ -239,6 +239,30 @@ function ticketStore() {
 		});
 	};
 
+	const setCheckedStatus = (status) => {
+		update((tickets) => {
+			const ticketPosition = tickets.findIndex((ticket) => ticket.selectedTicket === true);
+
+			tickets[ticketPosition].status = status;
+			selectedTicket.set(tickets[ticketPosition]);
+			ticketStorage.set(tickets);
+
+			return [...tickets];
+		});
+	};
+
+	const setDeliveredStatus = (status) => {
+		update((tickets) => {
+			const ticketPosition = tickets.findIndex((ticket) => ticket.selectedTicket === true);
+
+			tickets[ticketPosition].delivered = status;
+			selectedTicket.set(tickets[ticketPosition]);
+			ticketStorage.set(tickets);
+
+			return [...tickets];
+		});
+	};
+
 	const checkedStatus = () => {
 		update((tickets) => {
 			const ticketPosition = tickets.findIndex((ticket) => ticket.selectedTicket === true);
@@ -319,7 +343,9 @@ function ticketStore() {
 		reset,
 		checkedStatus,
 		checkedDelivery,
-		completeOrder
+		completeOrder,
+		setCheckedStatus,
+		setDeliveredStatus
 	};
 }
 
