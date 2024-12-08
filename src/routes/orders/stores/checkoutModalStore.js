@@ -9,6 +9,7 @@ import { writable, get } from 'svelte/store';
  * @prop {number} total
  * @prop {number} customerPayment
  * @prop {number} dueBalance
+ * @prop {boolean} pendingBalance
  */
 
 /** @type {Payment} */
@@ -18,7 +19,8 @@ const initialValues = {
 	eTransfer: 0,
 	total: 0,
 	customerPayment: 0,
-	dueBalance: 0
+	dueBalance: 0,
+	pendingBalance: false
 };
 
 const checkoutModalStorage = writable(
@@ -60,12 +62,20 @@ function createCheckouModalStore() {
 		}));
 	};
 
+	const tooglePendingBalance = () => {
+		update((store) => ({
+			...store,
+			pendingBalance: !store.pendingBalance
+		}));
+	};
+
 	return {
 		subscribe,
 		setValue,
 		calculateTotal,
 		reset,
-		setCash
+		setCash,
+		tooglePendingBalance
 	};
 }
 

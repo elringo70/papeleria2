@@ -70,10 +70,10 @@
 	}
 </script>
 
-<div class="flex h-full flex-col p-4">
+<div class="flex flex-col justify-around h-full p-5">
 	<form action="?/findProduct" method="post" use:enhance={addProductToTicket} autocomplete="off">
-		<div class="flex flex-row items-end justify-between align-bottom">
-			<div class="basis-4/6">
+		<div class="flex flex-row items-end w-full gap-5">
+			<div class="basis-9/12">
 				<Input
 					label="Código"
 					name="product"
@@ -82,39 +82,23 @@
 					tabindex="0"
 				/>
 			</div>
-			<div class="mb-3 basis-1/6">
-				<button
-					type="submit"
-					class="w-full rounded bg-indigo-500 py-2 text-white shadow shadow-indigo-500 hover:bg-indigo-600"
-					>Agregar</button
-				>
+			<div class="basis-3/12">
+				<button type="submit" class="btn hover:text-white btn-block">Agregar</button>
 			</div>
 		</div>
 	</form>
 
-	<div class="flex h-full flex-row items-end justify-around gap-4">
-		<button
-			type="button"
-			class="w-full rounded bg-blue-500 py-2 text-white shadow shadow-blue-500 hover:bg-blue-600"
-			on:click={showSearchModal}>Buscar Producto</button
+	<div class="grid w-full grid-cols-4 flex-row justify-center gap-5 py-12">
+		<button type="button" class="btn btn-accent hover:text-white" on:click={showSearchModal}
+			>Buscar Producto</button
 		>
 
-		<button
-			type="button"
-			class="w-full rounded bg-green-500 py-2 text-white shadow shadow-green-500 hover:bg-green-600"
-			>Detalle de Ticket</button
+		<button type="button" class="btn btn-accent hover:text-white">Detalle de Ticket</button>
+
+		<button type="button" class="btn btn-accent hover:text-white" on:click={showDailySalesModal}
+			>Ventas del día</button
 		>
 
-		<button
-			type="button"
-			class="w-full rounded bg-indigo-500 py-2 text-white shadow shadow-indigo-500 hover:bg-indigo-600"
-			on:click={showDailySalesModal}>Ventas del día</button
-		>
-
-		<button
-			type="submit"
-			class="w-full rounded bg-indigo-500 py-2 text-white shadow shadow-indigo-500 hover:bg-indigo-600"
-			>...</button
-		>
+		<button type="submit" class="btn btn-accent hover:text-white">...</button>
 	</div>
 </div>

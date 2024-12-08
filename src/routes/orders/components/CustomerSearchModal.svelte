@@ -3,6 +3,7 @@
 	import { enhance } from '$app/forms';
 
 	import { NumberField } from '$lib/components';
+	import Swal from 'sweetalert2/dist/sweetalert2.all';
 
 	export let elementCustomerSearchModal;
 	const tickets = getContext('tickets');
@@ -61,10 +62,12 @@
 				required
 			/>
 			<div class="modal-action">
-				<button class="btn-error btn" type="button" on:click={customerSearchModal.close()}
-					>Cancelar</button
+				<button
+					class="btn btn-error hover:text-white"
+					type="button"
+					on:click={customerSearchModal.close()}>Cancelar</button
 				>
-				<button class="btn" type="submit">Buscar</button>
+				<button class="btn hover:text-white" type="submit">Buscar</button>
 			</div>
 		</form>
 	</div>

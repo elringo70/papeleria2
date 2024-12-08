@@ -11,12 +11,12 @@
 
 	/** @type {HTMLElement} searchProductModal */
 	let searchProductModal;
-	/** @type {HTMLInputElement | null} inputProduct */
+	/** @type {HTMLElement} inputProduct */
 	let inputProduct;
-	/**
-	 * @type {HTMLFormElement} form
-	 */
+	/** @type {HTMLFormElement} form */
 	let form;
+	/** @type {HTMLElement} modalSize */
+	let modalSize;
 	let timer;
 
 	const focusInputElement = getContext('focusInputElement');
@@ -30,6 +30,8 @@
 			const { type, data } = result;
 			switch (type) {
 				case 'success':
+					modalSize.classList.remove('h-36');
+					modalSize.classList.add('h-[70vh]');
 					fillTable(data.products);
 					break;
 			}
@@ -40,9 +42,14 @@
 		clearTimeout(timer);
 
 		timer = setTimeout(async () => {
-			if (event.target.value !== '') return form.requestSubmit();
+			if (event.target.value.length <= 3) {
+				modalSize.classList.add('h-36');
+				modalSize.classList.remove('h-[70vh]');
+				searchProductStore.reset();
+				return;
+			}
 
-			resetTable();
+			if (event.target.value.length > 3) return form.requestSubmit();
 		}, 500);
 	};
 
@@ -83,6 +90,8 @@
 	};
 
 	const closeModal = () => {
+		modalSize.classList.add('h-36');
+		modalSize.classList.remove('h-[70vh]');
 		searchProductModal.close();
 		resetTable();
 	};
@@ -105,7 +114,7 @@
 		addEventListener('keydown', function (event) {
 			switch (event.key) {
 				case 'Escape':
-					resetTable();
+					closeModal();
 					break;
 			}
 		});
@@ -119,88 +128,87 @@
 <svelte:window on:keydown={selectOnEnter} />
 
 <dialog id="searchProductModal" class="modal">
-	<div class="modal-box w-5/6 max-w-none rounded-none bg-white">
-		<h1 class="text-center text-3xl text-gray-700">Buscar producto</h1>
-		<form
-			bind:this={form}
-			action="?/searchProduct"
-			method="post"
-			use:enhance={handleSubmit}
-			autocomplete="off"
-		>
-			<div class="flex items-start gap-5">
-				<Input
-					name="product"
-					placeholder="Producto"
-					bind:bindElement={inputProduct}
-					onKeyup={holdOnInput}
-				/>
+	<div
+		class="modal-box w-[70vw] max-w-none rounded bg-white transition-all h-36"
+		bind:this={modalSize}
+	>
+		<div class="h-full flex flex-col gap-y-5">
+			<div class="">
+				<h1 class="text-center text-3xl text-gray-700">Buscar producto</h1>
+				<form
+					bind:this={form}
+					action="?/searchProduct"
+					method="post"
+					use:enhance={handleSubmit}
+					autocomplete="off"
+				>
+					<div class="flex h-full items-center gap-5">
+						<Input
+							name="product"
+							placeholder="Producto"
+							bind:bindElement={inputProduct}
+							onKeyup={holdOnInput}
+						/>
 
-				<button
-					type="submit"
-					class=" rounded bg-indigo-500 px-3 py-2 text-white shadow shadow-indigo-500 hover:bg-indigo-600"
-					>Buscar</button
-				>
-				<button
-					type="button"
-					class=" rounded bg-blue-500 px-3 py-2 text-white shadow shadow-blue-500 hover:bg-blue-600"
-					on:click={resetTable}>Limpiar</button
-				>
-				<button
-					type="button"
-					class=" rounded bg-gray-400 px-3 py-2 text-white shadow shadow-gray-400 hover:bg-gray-500"
-					on:click={closeModal}>Cerrar</button
-				>
+						<button type="submit" class="btn btn-accent hover:text-white">Buscar</button>
+						<button type="button" class="btn btn-primary hover:text-white" on:click={resetTable}
+							>Limpiar</button
+						>
+						<button type="button" class="btn btn-neutral hover:text-white" on:click={closeModal}
+							>Cerrar</button
+						>
+					</div>
+				</form>
 			</div>
-		</form>
 
-		<div class="mt-5 overflow-x-auto">
 			{#if $searchProductStore.length > 0}
-				<table class="w-full text-left text-sm text-gray-500">
-					<thead class="bg-gray-50 text-xs uppercase text-gray-800">
-						<tr>
-							<th class="p-3">Producto</th>
-							<th class="p-3">Categoría</th>
-							<th class="p-3">Precio</th>
-							<th class="p-3">Stock</th>
-							<th class="p-3">Mayoreo</th>
-							<th class="p-3">Edición</th>
-						</tr>
-					</thead>
-					<tbody class="text-xs text-gray-700">
-						{#each $searchProductStore as product, index}
-							{#if product?.stock?.stock > 0 || product?.requiredStock === false}
-								<tr
-									class={$selectedProduct === index
-										? 'cursor-default select-none border-b bg-blue-500 text-white hover:bg-blue-600'
-										: 'cursor-default select-none border-b bg-white py-1 hover:bg-gray-100'}
-									on:click={() => handleOnClickProduct(index)}
-									on:dblclick={() => selectProduct(product)}
-								>
-									<td class="px-3 py-2">{product.product}</td>
-									<td class="px-3 py-2">{product.category}</td>
-									<td class="px-3 py-2">$ {product.price}</td>
-									<td class="px-3 py-2">{product.requiredStock ? product?.stock?.stock : ''}</td>
-									<td class="px-3 py-2">$ {product.wholesale}</td>
-									<td class="flex h-full w-full items-center justify-center px-3 py-2"
-										><a href="/products/{product._id}"><Icon icon="tabler:edit" /></a></td
+				<div class="overflow-auto h-full rounded">
+					<table class="w-full text-left text-sm text-gray-500 table-xs">
+						<thead class="bg-gray-200 uppercase text-gray-800 sticky top-0">
+							<tr>
+								<th class="p-3">Producto</th>
+								<th class="p-3">Categoría</th>
+								<th class="p-3">Precio</th>
+								<th class="p-3">Stock</th>
+								<th class="p-3">Mayoreo</th>
+								<th class="p-3">Edición</th>
+							</tr>
+						</thead>
+						<tbody class="text-xs text-gray-700">
+							{#each $searchProductStore as product, index}
+								{#if product?.stock?.stock > 0 || product?.requiredStock === false}
+									<tr
+										class={$selectedProduct === index
+											? 'cursor-default select-none border-b bg-blue-500 text-white hover:bg-blue-600'
+											: 'cursor-default select-none border-b bg-white py-1 hover:bg-gray-100'}
+										on:click={() => handleOnClickProduct(index)}
+										on:dblclick={() => selectProduct(product)}
 									>
-								</tr>
-							{:else}
-								<tr class="cursor-default select-none border-b bg-gray-100 py-1 text-gray-400">
-									<td class="px-3 py-2">{product.product}</td>
-									<td class="px-3 py-2">{product.category}</td>
-									<td class="px-3 py-2">$ {product.price}</td>
-									<td class="px-3 py-2">{product?.stock?.stock}</td>
-									<td class="px-3 py-2">$ {product.wholesale}</td>
-									<td class="flex h-full w-full justify-center px-3 py-2 align-middle"
-										><a href="/products/{product._id}"><Icon icon="tabler:edit" /></a></td
-									>
-								</tr>
-							{/if}
-						{/each}
-					</tbody>
-				</table>
+										<td class="px-3 py-2">{product.product}</td>
+										<td class="px-3 py-2">{product.category}</td>
+										<td class="px-3 py-2">$ {product.price}</td>
+										<td class="px-3 py-2">{product.requiredStock ? product?.stock?.stock : ''}</td>
+										<td class="px-3 py-2">$ {product.wholesale}</td>
+										<td class="flex h-full w-full items-center justify-center px-3 py-2"
+											><a href="/products/{product._id}"><Icon icon="tabler:edit" /></a></td
+										>
+									</tr>
+								{:else}
+									<tr class="cursor-default select-none border-b bg-gray-100 py-1 text-gray-400">
+										<td class="px-3 py-2">{product.product}</td>
+										<td class="px-3 py-2">{product.category}</td>
+										<td class="px-3 py-2">$ {product.price}</td>
+										<td class="px-3 py-2">{product?.stock?.stock}</td>
+										<td class="px-3 py-2">$ {product.wholesale}</td>
+										<td class="flex h-full w-full justify-center px-3 py-2 align-middle"
+											><a href="/products/{product._id}"><Icon icon="tabler:edit" /></a></td
+										>
+									</tr>
+								{/if}
+							{/each}
+						</tbody>
+					</table>
+				</div>
 			{/if}
 		</div>
 	</div>

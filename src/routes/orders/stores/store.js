@@ -1,8 +1,18 @@
 import { browser } from '$app/environment';
 import { get, writable } from 'svelte/store';
 
+/**
+ * @typedef {Object} Customer
+ * @property {string} phone
+ * @property {string} name
+ * @property {string} lastname
+ * @property {string} maternalsurname
+ * @property {boolean} active
+ * */
+
 const initialValues = [
 	{
+		/** @param {Customer} customer*/
 		customer: {},
 		products: [],
 		total: 0,

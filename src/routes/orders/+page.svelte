@@ -21,7 +21,7 @@
 	export let form;
 
 	/** @type {HTMLDialogElement | null} checkoutModal */
-	let checkoutModal;
+	let modalRef;
 	/** @type {HTMLDialogElement | null} searchProductModal */
 	let searchProductModal;
 	/** @type {HTMLDialogElement | null} elementCustomerSearchModal */
@@ -74,7 +74,7 @@
 
 	const showPurchaseModal = () => {
 		if ($selectedTicket.products.length === 0) return;
-		checkoutModal?.showModal();
+		modalRef?.showModal();
 	};
 
 	const showCustomerSearchModal = () => {
@@ -83,7 +83,10 @@
 
 	const showDailySalesModal = async () => {
 		await getDailySales();
-		await dailySalesModal?.showModal();
+		if ($dailySalesStore.length > 0) {
+			dailySalesStore.selectTicket(0);
+		}
+		dailySalesModal?.showModal();
 	};
 
 	const showSearchModal = () => {
@@ -91,7 +94,7 @@
 	};
 
 	onMount(() => {
-		checkoutModal = document.getElementById('checkoutModal');
+		//checkoutModal = document.getElementById('checkoutModal');
 		searchProductModal = document.getElementById('searchProductModal');
 		elementCustomerSearchModal = document.getElementById('customerSearchModal');
 		dailySalesModal = document.getElementById('dailySalesModal');
@@ -139,6 +142,6 @@
 
 <CustomerSearchModal {elementCustomerSearchModal} />
 
-<CheckoutModal Form={form} />
+<CheckoutModal Form={form} bind:this={modalRef} />
 
 <DailySalesModal dailySales={$dailySalesStore} on:dailySalesReset={getDailySales} />

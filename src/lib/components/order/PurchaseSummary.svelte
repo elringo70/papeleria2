@@ -18,9 +18,9 @@
 		JSON.stringify($selectedTicket.customer) === '{}'
 			? ''
 			: JSON.stringify($selectedTicket.customer) !== '{}' &&
-			  $selectedTicket.customer.hasOwnProperty('name')
-			? customerNameFormat($selectedTicket.customer)
-			: '';
+				  $selectedTicket.customer.hasOwnProperty('name')
+				? customerNameFormat($selectedTicket.customer)
+				: '';
 	$: phoneNumber = $selectedTicket.customer.phone
 		? phoneNumberFormat($selectedTicket.customer.phone)
 		: '';
@@ -53,19 +53,17 @@
 <div
 	class="col-span-1 row-span-6 row-start-1 flex h-full grid-flow-col flex-col overflow-auto bg-white"
 >
-	<div>
-		<div class="mb-7">
-			<h3 class="text-2xl font-semibold text-gray-800">Resumen de la orden</h3>
-			<p class="text-gray-400">
-				Cliente: {customerName}
-			</p>
-			<p class="text-gray-400">
-				Numero: {phoneNumber}
-			</p>
-			<p class="text-gray-400">
-				Dirección: {customerAddress}
-			</p>
-		</div>
+	<div class="mb-7">
+		<h3 class="text-2xl font-semibold text-gray-800">Resumen de la orden</h3>
+		<p class="text-gray-400">
+			Cliente: {customerName}
+		</p>
+		<p class="text-gray-400">
+			Numero: {phoneNumber}
+		</p>
+		<p class="text-gray-400">
+			Dirección: {customerAddress}
+		</p>
 	</div>
 
 	<div class="flex justify-around">
@@ -94,7 +92,7 @@
 	<div class="mt-auto">
 		<button
 			type="button"
-			class="w-full rounded bg-indigo-600 py-2 text-white hover:bg-indigo-700"
+			class="btn btn-accent btn-block btn-sm hover:text-white"
 			on:click={showPurchaseModal}>Completar orden</button
 		>
 	</div>

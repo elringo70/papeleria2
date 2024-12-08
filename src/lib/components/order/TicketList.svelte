@@ -56,7 +56,7 @@
 <div class="mt-auto p-2">
 	<button
 		type="button"
-		class="mt-auto w-full rounded border-indigo-600 bg-indigo-600 py-2 text-white hover:border-indigo-700 hover:bg-indigo-700"
+		class="btn btn-primary hover:text-white btn-block btn-sm"
 		on:click={addTicket}>Agregar ticket</button
 	>
 </div>

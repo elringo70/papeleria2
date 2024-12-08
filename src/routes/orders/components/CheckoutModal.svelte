@@ -10,9 +10,11 @@
 	export let Form;
 
 	/** @type {HTMLDialogElement} checkoutModal */
-	let checkoutModal;
+	export let checkoutModal;
 	/** @type {boolean} missingTotal */
 	let missingTotal = false;
+	/** @type {HTMLInputElement} pendingBalance */
+	let pendingBalance;
 
 	const tickets = getContext('tickets');
 
@@ -43,6 +45,15 @@
 				}
 
 				break;
+			case 'outstanding':
+				if (
+					!(pendingBalance.checked && $checkoutModalStore.customerPayment <= $selectedTicket.total)
+				) {
+					pendingBalance.classList.replace('border-gray-300', 'border-red-300');
+					cancel();
+				}
+
+				break;
 			default:
 				break;
 		}
@@ -54,13 +65,15 @@
 					completeOrder();
 					resetModal();
 					break;
+				case 'failure':
+					break;
 			}
 			missingTotal = false;
 		};
 	};
 
 	const setPendingBalance = () => {
-		console.log($checkoutModalStore);
+		checkoutModalStore.tooglePendingBalance();
 	};
 
 	const completeOrder = () => {
@@ -73,6 +86,7 @@
 	};
 
 	const resetModal = () => {
+		pendingBalance.classList.replace('border-red-300', 'border-gray-300');
 		checkoutModalStore.reset();
 		paymentMethodsStore.reset();
 	};
@@ -98,6 +112,7 @@
 
 	const cancelPurchase = () => {
 		checkoutModal.close();
+		pendingBalance.classList.replace('border-red-300', 'border-gray-300');
 		tickets.setDeliveredStatus(false);
 		tickets.setCheckedStatus(false);
 	};
@@ -118,14 +133,14 @@
 	});
 </script>
 
-<dialog id="checkoutModal" class="modal">
-	<div class="modal-box w-4/6 max-w-none rounded-none bg-white">
+<dialog id="checkoutModal" class="modal" bind:this={checkoutModal}>
+	<div class="modal-box w-4/6 max-w-none rounded bg-white">
 		<form action="?/submitOrder" method="post" use:enhance={handleSubmit} autocomplete="off">
 			<div class="grid grid-cols-3 grid-rows-3 gap-5">
 				<div class="col-span-2 row-span-3 border-2 border-gray-200 p-3">
 					<div class="flex h-full flex-col justify-between gap-5">
 						<h1 class="text-center text-7xl text-gray-700">
-							${$selectedTicket.total}
+							$ {$selectedTicket.total}
 						</h1>
 
 						<div class="grid grid-cols-3 gap-2">
@@ -215,7 +230,9 @@
 									<input
 										name="pending-balance"
 										type="checkbox"
-										class="checkbox checkbox-error border-gray-300"
+										class="checkbox checkbox-primary border-gray-300"
+										checked={$checkoutModalStore.pendingBalance}
+										bind:this={pendingBalance}
 										on:change={setPendingBalance}
 									/>
 								</div>
@@ -297,7 +314,8 @@
 							<button
 								formaction="?/outstanding"
 								class="btn btn-primary btn-sm"
-								disabled={!submitButtonAvailable}>SALDO PENDIENTE</button
+								disabled={!$checkoutModalStore.pendingBalance || !submitButtonAvailable}
+								>SALDO PENDIENTE</button
 							>
 						{:else}
 							<button

@@ -24,7 +24,7 @@
 	export let errors = undefined;
 </script>
 
-<div class="form-control mb-3 {width}">
+<div class="form-control {width}">
 	{#if label}
 		<label class="mb-2 block text-sm font-bold uppercase leading-normal text-gray-600" for={name}>
 			{label}

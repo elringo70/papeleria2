@@ -154,20 +154,11 @@ export const actions = {
 				});
 			}
 
-			if (
-				!(
-					Object.keys(updatedProductStock).length === 0 &&
-					updatedProductStock.constructor === Object
-				)
-			) {
-				return fail(401, { errors: 'Server error' });
-			}
-
 			const bulkOperation = bulkOperationTransaction(updatedProductStock);
 
 			session.startTransaction();
-			await Product.bulkWrite(bulkOperation, { session });
 
+			await Product.bulkWrite(bulkOperation, { session });
 			const order = new Order(body);
 			await order.save({ session });
 
