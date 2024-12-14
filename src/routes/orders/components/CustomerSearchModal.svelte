@@ -1,12 +1,14 @@
 <script>
-	import { afterUpdate, onMount, getContext } from 'svelte';
+	import { afterUpdate, getContext } from 'svelte';
 	import { enhance } from '$app/forms';
 
 	import { NumberField } from '$lib/components';
 	import Swal from 'sweetalert2/dist/sweetalert2.all';
 
-	export let elementCustomerSearchModal;
+	/** @type {HTMLDialogElement} dialog */
+	export let dialog;
 	const tickets = getContext('tickets');
+	/** @type {HTMLInputElement} inputElement */
 	let inputElement;
 
 	const setCustomerTicket = () => {
@@ -21,7 +23,7 @@
 						tickets.setCustomerTicket(data.phone);
 					}
 
-					elementCustomerSearchModal.close();
+					dialog.close();
 					break;
 				case 'failure':
 					Swal.fire({
@@ -43,14 +45,9 @@
 			}, 100);
 		}
 	});
-
-	let customerSearchModal;
-	onMount(() => {
-		customerSearchModal = document.getElementById('customerSearchModal');
-	});
 </script>
 
-<dialog id="customerSearchModal" class="modal">
+<dialog class="modal" bind:this={dialog}>
 	<div class="modal-box w-1/3 max-w-none rounded-none bg-white text-gray-700">
 		<h3 class="text-lg font-bold">Buscar cliente</h3>
 		<form action="?/findCustomer" use:enhance={setCustomerTicket} method="post" autocomplete="off">
@@ -62,10 +59,8 @@
 				required
 			/>
 			<div class="modal-action">
-				<button
-					class="btn btn-error hover:text-white"
-					type="button"
-					on:click={customerSearchModal.close()}>Cancelar</button
+				<button class="btn btn-error hover:text-white" type="button" on:click={dialog.close()}
+					>Cancelar</button
 				>
 				<button class="btn hover:text-white" type="submit">Buscar</button>
 			</div>

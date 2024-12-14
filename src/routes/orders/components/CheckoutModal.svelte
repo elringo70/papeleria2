@@ -7,10 +7,11 @@
 	import { selectedTicket } from '../stores/store';
 	import { CheckboxPressed, NumberField } from '$lib/components';
 
-	export let Form;
+	const focusInputElement = getContext('focusInputElement');
 
-	/** @type {HTMLDialogElement} checkoutModal */
-	export let checkoutModal;
+	export let Form;
+	/** @type {HTMLDialogElement} dialog */
+	export let dialog;
 	/** @type {boolean} missingTotal */
 	let missingTotal = false;
 	/** @type {HTMLInputElement} pendingBalance */
@@ -26,6 +27,8 @@
 	$: submitButtonAvailable =
 		$paymentMethodsStore.cash || $paymentMethodsStore.creditDebit || $paymentMethodsStore.eTransfer;
 
+	dialog = () => dialog.close();
+
 	const handleSubmit = ({ formData, cancel, action }) => {
 		const namedAction = action.search.replace('?/', '');
 
@@ -39,7 +42,7 @@
 					missingTotal = true;
 					cancel();
 				} else if (!(status && delivery)) {
-					checkoutModal.close();
+					dialog.close();
 					missingTotal = false;
 					cancel();
 				}
@@ -61,7 +64,7 @@
 		return async ({ result }) => {
 			switch (result.type) {
 				case 'success':
-					checkoutModal.close();
+					dialog.close();
 					completeOrder();
 					resetModal();
 					break;
@@ -78,11 +81,13 @@
 
 	const completeOrder = () => {
 		tickets.completeOrder();
+		focusInputElement();
 	};
 
 	const resumeOrder = () => {
-		checkoutModal.close();
+		dialog.close();
 		resetModal();
+		focusInputElement();
 	};
 
 	const resetModal = () => {
@@ -111,15 +116,14 @@
 	};
 
 	const cancelPurchase = () => {
-		checkoutModal.close();
+		dialog.close();
 		pendingBalance.classList.replace('border-red-300', 'border-gray-300');
 		tickets.setDeliveredStatus(false);
 		tickets.setCheckedStatus(false);
+		focusInputElement();
 	};
 
 	onMount(() => {
-		checkoutModal = document.getElementById('checkoutModal');
-
 		addEventListener('keydown', function (event) {
 			switch (event.key) {
 				case 'Escape':
@@ -133,7 +137,7 @@
 	});
 </script>
 
-<dialog id="checkoutModal" class="modal" bind:this={checkoutModal}>
+<dialog class="modal" bind:this={dialog}>
 	<div class="modal-box w-4/6 max-w-none rounded bg-white">
 		<form action="?/submitOrder" method="post" use:enhance={handleSubmit} autocomplete="off">
 			<div class="grid grid-cols-3 grid-rows-3 gap-5">

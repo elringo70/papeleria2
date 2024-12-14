@@ -12,8 +12,8 @@
 	const focusInputElement = getContext('focusInputElement');
 
 	export let dailySales;
-	/** @type {HTMLDialogElement} dailySalesModal*/
-	let dailySalesModal;
+	/** @type {HTMLDialogElement} dialog*/
+	export let dialog;
 
 	$: selectedProducts = $selectedTicket.products || [];
 	$: customerPayment = $selectedTicket.customerPayment || 0;
@@ -47,7 +47,7 @@
 
 	const closeDailySalesModal = () => {
 		reset();
-		dailySalesModal.close();
+		dialog.close();
 		focusInputElement();
 	};
 
@@ -57,7 +57,7 @@
 
 	/** @param {{ currentTarget: EventTarget & HTMLFormElement}} event */
 	async function handleSubmit(event) {
-		dailySalesModal.close();
+		dialog.close();
 
 		const currentTarget = event.currentTarget;
 		const action = event.currentTarget.action;
@@ -84,19 +84,17 @@
 				case 'success':
 					dispatch('dailySalesReset');
 					await invalidateAll();
-					dailySalesModal.showModal();
+					dialog.showModal();
 					break;
 			}
 
 			applyAction(result);
 		} else {
-			dailySalesModal.showModal();
+			dialog.showModal();
 		}
 	}
 
 	onMount(() => {
-		dailySalesModal = document.getElementById('dailySalesModal');
-
 		addEventListener('keydown', function (event) {
 			switch (event.key) {
 				case 'Escape':
@@ -108,7 +106,7 @@
 	});
 </script>
 
-<dialog id="dailySalesModal" class="modal">
+<dialog class="modal" bind:this={dialog}>
 	<div class="modal-box max-w-none rounded bg-white h-[70vh]">
 		<div class="grid-container h-full">
 			<div class="title">

@@ -9,8 +9,9 @@
 	const tickets = getContext('tickets');
 	const focusInputElement = getContext('focusInputElement');
 
-	export let showSearchModal;
+	export let showSearchProductModal;
 	export let showDailySalesModal;
+	/** @type {HTMLInputElement} bindInputElement */
 	export let bindInputElement;
 
 	const addProduct = (dataProduct) => {
@@ -70,7 +71,7 @@
 	}
 </script>
 
-<div class="flex flex-col justify-around h-full p-5">
+<div class="flex flex-col h-full justify-around p-3">
 	<form action="?/findProduct" method="post" use:enhance={addProductToTicket} autocomplete="off">
 		<div class="flex flex-row items-end w-full gap-5">
 			<div class="basis-9/12">
@@ -88,17 +89,23 @@
 		</div>
 	</form>
 
-	<div class="grid w-full grid-cols-4 flex-row justify-center gap-5 py-12">
-		<button type="button" class="btn btn-accent hover:text-white" on:click={showSearchModal}
-			>Buscar Producto</button
+	<div class="grid w-full grid-cols-4 flex-row justify-center gap-5">
+		<button
+			type="button"
+			class="btn btn-accent btn-sm hover:text-white text-xs shadow"
+			on:click={showSearchProductModal}>Buscar Producto</button
 		>
 
-		<button type="button" class="btn btn-accent hover:text-white">Detalle de Ticket</button>
-
-		<button type="button" class="btn btn-accent hover:text-white" on:click={showDailySalesModal}
-			>Ventas del día</button
+		<button type="button" class="btn btn-accent btn-sm hover:text-white text-xs shadow"
+			>Detalle de Ticket</button
 		>
 
-		<button type="submit" class="btn btn-accent hover:text-white">...</button>
+		<button
+			type="button"
+			class="btn btn-accent btn-sm hover:text-white text-xs shadow"
+			on:click={showDailySalesModal}>Ventas del día</button
+		>
+
+		<button type="submit" class="btn btn-accent btn-sm hover:text-white text-xs shadow">...</button>
 	</div>
 </div>

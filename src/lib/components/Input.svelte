@@ -12,7 +12,8 @@
 	/** @type {null|string} */
 	export let bindElement = null;
 	export let width = 'w-full';
-	export let tabindex = '';
+	/** @type {number|string|undefined} tabindex */
+	export let tabindex = undefined;
 
 	export let onChange = () => {};
 	export let onKeyup = () => {};

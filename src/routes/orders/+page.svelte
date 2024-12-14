@@ -4,6 +4,7 @@
 	/* STORES */
 	import { tickets, selectedTicket } from './stores/store';
 	import { dailySalesStore } from './stores/dailySalesStore';
+	import { createModalStore } from './stores/modalsStore';
 
 	/* COMPONENTS */
 	import PurchaseSummary from '$lib/components/order/PurchaseSummary.svelte';
@@ -20,16 +21,20 @@
 	/** @type {import('./$types').ActionData} */
 	export let form;
 
-	/** @type {HTMLDialogElement | null} checkoutModal */
-	let modalRef;
-	/** @type {HTMLDialogElement | null} searchProductModal */
+	/** @type {HTMLDialogElement} checkoutModal */
+	let checkoutModal;
+	/** @type {HTMLDialogElement} searchProductModal */
 	let searchProductModal;
-	/** @type {HTMLDialogElement | null} elementCustomerSearchModal */
+	/** @type {HTMLDialogElement} elementCustomerSearchModal */
 	let elementCustomerSearchModal;
-	/** @type {HTMLDialogElement | null} dailySalesModal */
+	/** @type {HTMLDialogElement} dailySalesModal */
 	let dailySalesModal;
-	/** @type {HTMLInputElement | null} bindInputElement */
+	/** @type {HTMLElement} bindInputElement */
 	let bindInputElement;
+
+	/** @type {HTMLDialogElement[]} modals*/
+	let modals;
+	let modalsStore;
 
 	/**
 	 * @param {KeyboardEvent} event
@@ -42,13 +47,26 @@
 				break;
 			case 'F10':
 				event.preventDefault();
-				showSearchModal();
+				showSearchProductModal();
 				break;
 			case 'F12':
 				event.preventDefault();
 				showPurchaseModal();
 				break;
 		}
+		//switch (event.key) {
+		//	case 'F1':
+		//		event.preventDefault();
+		//		break;
+		//	case 'F10':
+		//		event.preventDefault();
+		//		showSearchModal();
+		//		break;
+		//	case 'F12':
+		//		event.preventDefault();
+		//		showPurchaseModal();
+		//		break;
+		//}
 	};
 
 	const focusInputElement = () => {
@@ -73,12 +91,11 @@
 	};
 
 	const showPurchaseModal = () => {
-		if ($selectedTicket.products.length === 0) return;
-		modalRef?.showModal();
+		if ($selectedTicket.products.length > 0) checkoutModal.showModal();
 	};
 
 	const showCustomerSearchModal = () => {
-		elementCustomerSearchModal?.showModal();
+		elementCustomerSearchModal.showModal();
 	};
 
 	const showDailySalesModal = async () => {
@@ -86,19 +103,17 @@
 		if ($dailySalesStore.length > 0) {
 			dailySalesStore.selectTicket(0);
 		}
-		dailySalesModal?.showModal();
+		dailySalesModal.showModal();
 	};
 
-	const showSearchModal = () => {
-		searchProductModal?.showModal();
+	const showSearchProductModal = () => {
+		searchProductModal.showModal();
 	};
 
 	onMount(() => {
-		//checkoutModal = document.getElementById('checkoutModal');
-		searchProductModal = document.getElementById('searchProductModal');
-		elementCustomerSearchModal = document.getElementById('customerSearchModal');
-		dailySalesModal = document.getElementById('dailySalesModal');
 		bindInputElement = document.getElementById('product');
+		modals = [checkoutModal, searchProductModal, elementCustomerSearchModal, dailySalesModal];
+		modalsStore = createModalStore(modals);
 
 		focusInputElement();
 	});
@@ -124,7 +139,7 @@
 
 	<!-- Add Product Input Component -->
 	<div class="col-span-7 row-span-2 row-start-1 rounded bg-white shadow-md">
-		<ProductInput {showSearchModal} {showDailySalesModal} {bindInputElement} />
+		<ProductInput {showSearchProductModal} {showDailySalesModal} {bindInputElement} />
 	</div>
 
 	<!-- Ticket Detail -->
@@ -138,10 +153,11 @@
 	</div>
 </section>
 
-<SearchProductModal />
-
-<CustomerSearchModal {elementCustomerSearchModal} />
-
-<CheckoutModal Form={form} bind:this={modalRef} />
-
-<DailySalesModal dailySales={$dailySalesStore} on:dailySalesReset={getDailySales} />
+<SearchProductModal bind:dialog={searchProductModal} />
+<CustomerSearchModal bind:dialog={elementCustomerSearchModal} />
+<CheckoutModal Form={form} bind:dialog={checkoutModal} />
+<DailySalesModal
+	dailySales={$dailySalesStore}
+	on:dailySalesReset={getDailySales}
+	bind:dialog={dailySalesModal}
+/>

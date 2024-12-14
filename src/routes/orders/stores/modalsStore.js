@@ -1,26 +1,12 @@
 import { writable } from 'svelte/store';
 
-function createModalsStore() {
-	const { subscribe, set, update } = writable([]);
-
-	const setModals = (modals) => {
-		set(modals);
-	};
-
-	const closeModals = () => {
-		update((modals) => {
-			modals.forEach((modal) => {
-				console.log(modal.getAttributeNode('open'));
-			});
-			return [...modals];
-		});
-	};
+/**
+ * @param {HTMLDialogElement[]} initialValues
+ */
+export const createModalStore = (initialValues) => {
+	const { subscribe } = writable(initialValues);
 
 	return {
-		subscribe,
-		setModals,
-		closeModals
+		subscribe
 	};
-}
-
-export const modalsStore = createModalsStore();
+};

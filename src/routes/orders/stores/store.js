@@ -12,7 +12,7 @@ import { get, writable } from 'svelte/store';
 
 const initialValues = [
 	{
-		/** @param {Customer} customer*/
+		/** @param {Customer} customer */
 		customer: {},
 		products: [],
 		total: 0,

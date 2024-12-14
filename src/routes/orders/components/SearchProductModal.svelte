@@ -9,8 +9,8 @@
 
 	import { Input } from '$lib/components';
 
-	/** @type {HTMLElement} searchProductModal */
-	let searchProductModal;
+	/** @type {HTMLDialogElement} dialog */
+	export let dialog;
 	/** @type {HTMLElement} inputProduct */
 	let inputProduct;
 	/** @type {HTMLFormElement} form */
@@ -80,19 +80,19 @@
 			} else {
 				tickets.addProductToTicket(product);
 				resetTable();
-				searchProductModal.close();
+				dialog.close();
 			}
 		} else {
 			tickets.addProductToTicket(product);
 			resetTable();
-			searchProductModal.close();
+			dialog.close();
 		}
 	};
 
 	const closeModal = () => {
 		modalSize.classList.add('h-36');
 		modalSize.classList.remove('h-[70vh]');
-		searchProductModal.close();
+		dialog.close();
 		resetTable();
 	};
 
@@ -109,8 +109,6 @@
 	};
 
 	onMount(() => {
-		searchProductModal = document.getElementById('searchProductModal');
-
 		addEventListener('keydown', function (event) {
 			switch (event.key) {
 				case 'Escape':
@@ -127,7 +125,7 @@
 
 <svelte:window on:keydown={selectOnEnter} />
 
-<dialog id="searchProductModal" class="modal">
+<dialog class="modal" bind:this={dialog}>
 	<div
 		class="modal-box w-[70vw] max-w-none rounded bg-white transition-all h-36"
 		bind:this={modalSize}
