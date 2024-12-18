@@ -93,7 +93,7 @@
 		<button
 			type="button"
 			class="btn btn-accent btn-sm hover:text-white text-xs shadow"
-			on:click={showSearchProductModal}>Buscar Producto</button
+			on:click={showSearchProductModal}>Buscar Producto - F10</button
 		>
 
 		<button type="button" class="btn btn-accent btn-sm hover:text-white text-xs shadow"
@@ -103,7 +103,7 @@
 		<button
 			type="button"
 			class="btn btn-accent btn-sm hover:text-white text-xs shadow"
-			on:click={showDailySalesModal}>Ventas del día</button
+			on:click={showDailySalesModal}>Ventas del día - F8</button
 		>
 
 		<button type="submit" class="btn btn-accent btn-sm hover:text-white text-xs shadow">...</button>

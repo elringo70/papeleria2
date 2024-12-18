@@ -1,8 +1,9 @@
 <script>
-	import { getContext, onMount } from 'svelte';
+	import { getContext } from 'svelte';
 	import { enhance } from '$app/forms';
 	import { checkoutModalStore } from '../stores/checkoutModalStore';
 	import { paymentMethodsStore } from '../stores/paymentMethodsStore';
+	import { modalStore } from '../stores/modalsStore';
 
 	import { selectedTicket } from '../stores/store';
 	import { CheckboxPressed, NumberField } from '$lib/components';
@@ -12,10 +13,14 @@
 	export let Form;
 	/** @type {HTMLDialogElement} dialog */
 	export let dialog;
-	/** @type {boolean} missingTotal */
-	let missingTotal = false;
 	/** @type {HTMLInputElement} pendingBalance */
 	let pendingBalance;
+	/** @type {boolean} missingTotal */
+	let missingTotal = false;
+	/** @type {HTMLFormElement} checkoutModalForm */
+	let checkoutModalForm;
+
+	export let handleCheckoutModal;
 
 	const tickets = getContext('tickets');
 
@@ -28,6 +33,22 @@
 		$paymentMethodsStore.cash || $paymentMethodsStore.creditDebit || $paymentMethodsStore.eTransfer;
 
 	dialog = () => dialog.close();
+
+	/** @param {KeyboardEvent} event */
+	handleCheckoutModal = (event) => {
+		switch (event.key) {
+			case 'F2':
+				checkoutModalForm.requestSubmit();
+				break;
+			case 'F8':
+				event.preventDefault();
+				resumeOrder();
+				break;
+			case 'Escape':
+				cancelPurchase();
+				break;
+		}
+	};
 
 	const handleSubmit = ({ formData, cancel, action }) => {
 		const namedAction = action.search.replace('?/', '');
@@ -57,8 +78,6 @@
 				}
 
 				break;
-			default:
-				break;
 		}
 
 		return async ({ result }) => {
@@ -80,11 +99,13 @@
 	};
 
 	const completeOrder = () => {
+		modalStore.resetModalStore();
 		tickets.completeOrder();
 		focusInputElement();
 	};
 
 	const resumeOrder = () => {
+		modalStore.resetModalStore();
 		dialog.close();
 		resetModal();
 		focusInputElement();
@@ -104,10 +125,19 @@
 		tickets.checkedDelivery();
 	};
 
+	/**
+	 * @param {HTMLInputElement} event
+	 * @param {string} attribute
+	 * return {void}
+	 */
 	const onInput = (event, attribute) => {
 		checkoutModalStore.setValue(attribute, event.target.value);
 	};
 
+	/**
+	 * @param {string} attribute
+	 * return {void}
+	 */
 	const onChange = (attribute) => {
 		if ($paymentMethodsStore[attribute]) {
 			checkoutModalStore.setValue(attribute, 0);
@@ -116,30 +146,30 @@
 	};
 
 	const cancelPurchase = () => {
-		dialog.close();
-		pendingBalance.classList.replace('border-red-300', 'border-gray-300');
+		modalStore.resetModalStore();
+
+		if ($checkoutModalStore.customerPayment < $selectedTicket.total) {
+			missingTotal = false;
+		}
+
+		resetModal();
+
 		tickets.setDeliveredStatus(false);
 		tickets.setCheckedStatus(false);
+
 		focusInputElement();
 	};
-
-	onMount(() => {
-		addEventListener('keydown', function (event) {
-			switch (event.key) {
-				case 'Escape':
-					if ($checkoutModalStore.customerPayment < $selectedTicket.total) {
-						missingTotal = false;
-					}
-					resetModal();
-					break;
-			}
-		});
-	});
 </script>
 
-<dialog class="modal" bind:this={dialog}>
+<dialog class="modal" bind:this={dialog} data-modal="checkout-modal">
 	<div class="modal-box w-4/6 max-w-none rounded bg-white">
-		<form action="?/submitOrder" method="post" use:enhance={handleSubmit} autocomplete="off">
+		<form
+			action="?/submitOrder"
+			method="post"
+			use:enhance={handleSubmit}
+			autocomplete="off"
+			bind:this={checkoutModalForm}
+		>
 			<div class="grid grid-cols-3 grid-rows-3 gap-5">
 				<div class="col-span-2 row-span-3 border-2 border-gray-200 p-3">
 					<div class="flex h-full flex-col justify-between gap-5">
@@ -326,11 +356,11 @@
 								type="button"
 								class="btn-accent btn btn-sm"
 								on:click={resumeOrder}
-								disabled={!submitButtonAvailable}>RESUMIR COMPRA</button
+								disabled={!submitButtonAvailable}>RESUMIR COMPRA - F8</button
 							>
 						{/if}
 						<button type="button" on:click={cancelPurchase} class="btn-error btn btn-block btn-sm"
-							>CANCELAR</button
+							>CANCELAR - ESC</button
 						>
 					</div>
 				</div>

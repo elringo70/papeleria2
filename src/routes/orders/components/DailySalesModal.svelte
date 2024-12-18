@@ -106,7 +106,7 @@
 	});
 </script>
 
-<dialog class="modal" bind:this={dialog}>
+<dialog class="modal" bind:this={dialog} data-modal="dailysales-modal">
 	<div class="modal-box max-w-none rounded bg-white h-[70vh]">
 		<div class="grid-container h-full">
 			<div class="title">
@@ -287,7 +287,7 @@
 						<button
 							type="button"
 							class="btn btn-neutral hover:text-white"
-							on:click={closeDailySalesModal}>Cerrar</button
+							on:click={closeDailySalesModal}>Cerrar - ESC</button
 						>
 					</div>
 				</form>

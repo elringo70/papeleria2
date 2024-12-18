@@ -1,5 +1,5 @@
 <script>
-	import { getContext, onMount } from 'svelte';
+	import { getContext } from 'svelte';
 	import { enhance } from '$app/forms';
 	import { beforeNavigate } from '$app/navigation';
 	import Swal from 'sweetalert2';
@@ -8,6 +8,7 @@
 	import { searchProductStore, selectedProduct } from '../stores/searchProductStore';
 
 	import { Input } from '$lib/components';
+	import { modalStore } from '../stores/modalsStore';
 
 	/** @type {HTMLDialogElement} dialog */
 	export let dialog;
@@ -49,7 +50,7 @@
 				return;
 			}
 
-			if (event.target.value.length > 3) return form.requestSubmit();
+			if (event.target.value.length > 3) form.requestSubmit();
 		}, 500);
 	};
 
@@ -92,10 +93,12 @@
 	const closeModal = () => {
 		modalSize.classList.add('h-36');
 		modalSize.classList.remove('h-[70vh]');
+		modalStore.resetModalStore();
 		dialog.close();
 		resetTable();
 	};
 
+	/** @param {KeyboardEvent} event */
 	const selectOnEnter = (event) => {
 		if (typeof $selectedProduct === 'number') {
 			switch (event.key) {
@@ -104,19 +107,14 @@
 					selectProduct($searchProductStore[$selectedProduct]);
 					focusInputElement();
 					break;
+				case 'Escape':
+					modalSize.classList.add('h-36');
+					modalSize.classList.remove('h-[70vh]');
+					resetTable();
+					break;
 			}
 		}
 	};
-
-	onMount(() => {
-		addEventListener('keydown', function (event) {
-			switch (event.key) {
-				case 'Escape':
-					closeModal();
-					break;
-			}
-		});
-	});
 
 	beforeNavigate(() => {
 		resetTable();
@@ -125,7 +123,7 @@
 
 <svelte:window on:keydown={selectOnEnter} />
 
-<dialog class="modal" bind:this={dialog}>
+<dialog class="modal" bind:this={dialog} data-modal="product-modal">
 	<div
 		class="modal-box w-[70vw] max-w-none rounded bg-white transition-all h-36"
 		bind:this={modalSize}

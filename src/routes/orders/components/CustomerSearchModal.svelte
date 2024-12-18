@@ -47,7 +47,7 @@
 	});
 </script>
 
-<dialog class="modal" bind:this={dialog}>
+<dialog class="modal" bind:this={dialog} data-modal="">
 	<div class="modal-box w-1/3 max-w-none rounded-none bg-white text-gray-700">
 		<h3 class="text-lg font-bold">Buscar cliente</h3>
 		<form action="?/findCustomer" use:enhance={setCustomerTicket} method="post" autocomplete="off">

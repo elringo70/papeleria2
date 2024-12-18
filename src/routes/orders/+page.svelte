@@ -4,7 +4,7 @@
 	/* STORES */
 	import { tickets, selectedTicket } from './stores/store';
 	import { dailySalesStore } from './stores/dailySalesStore';
-	import { createModalStore } from './stores/modalsStore';
+	import { modalStore } from './stores/modalsStore';
 
 	/* COMPONENTS */
 	import PurchaseSummary from '$lib/components/order/PurchaseSummary.svelte';
@@ -31,42 +31,54 @@
 	let dailySalesModal;
 	/** @type {HTMLElement} bindInputElement */
 	let bindInputElement;
-
-	/** @type {HTMLDialogElement[]} modals*/
-	let modals;
-	let modalsStore;
+	/** @function
+	 * @name handleCheckoutModal */
+	let handleCheckoutModal;
+	/** @type {'checkout-modal'|null} openModal */
 
 	/**
 	 * @param {KeyboardEvent} event
-	 * @return {void}
+	 * @returns {void}
 	 */
 	const onKeyDown = (event) => {
-		switch (event.key) {
-			case 'F1':
-				event.preventDefault();
-				break;
-			case 'F10':
-				event.preventDefault();
-				showSearchProductModal();
-				break;
-			case 'F12':
-				event.preventDefault();
-				showPurchaseModal();
-				break;
+		const modals = [checkoutModal, searchProductModal, elementCustomerSearchModal, dailySalesModal];
+
+		modals.forEach((modal) => {
+			if (modal.hasAttribute('open')) modalStore.setModal(modal.getAttribute('data-modal'));
+		});
+
+		if ($modalStore !== null) {
+			const keys = ['F12', 'F10', 'F6', 'F8'];
+
+			if (keys.includes(event.key)) event.preventDefault();
+
+			switch ($modalStore) {
+				case 'checkout-modal':
+					handleCheckoutModal(event);
+					break;
+			}
+
+			if (event.key === 'Escape') modalStore.resetModalStore();
+		} else {
+			switch (event.key) {
+				case 'F6':
+					event.preventDefault();
+					showCustomerSearchModal();
+					break;
+				case 'F8':
+					event.preventDefault();
+					showDailySalesModal();
+					break;
+				case 'F10':
+					event.preventDefault();
+					showSearchProductModal();
+					break;
+				case 'F12':
+					event.preventDefault();
+					showCheckoutModal();
+					break;
+			}
 		}
-		//switch (event.key) {
-		//	case 'F1':
-		//		event.preventDefault();
-		//		break;
-		//	case 'F10':
-		//		event.preventDefault();
-		//		showSearchModal();
-		//		break;
-		//	case 'F12':
-		//		event.preventDefault();
-		//		showPurchaseModal();
-		//		break;
-		//}
 	};
 
 	const focusInputElement = () => {
@@ -90,7 +102,7 @@
 		}
 	};
 
-	const showPurchaseModal = () => {
+	const showCheckoutModal = () => {
 		if ($selectedTicket.products.length > 0) checkoutModal.showModal();
 	};
 
@@ -103,6 +115,7 @@
 		if ($dailySalesStore.length > 0) {
 			dailySalesStore.selectTicket(0);
 		}
+
 		dailySalesModal.showModal();
 	};
 
@@ -112,8 +125,6 @@
 
 	onMount(() => {
 		bindInputElement = document.getElementById('product');
-		modals = [checkoutModal, searchProductModal, elementCustomerSearchModal, dailySalesModal];
-		modalsStore = createModalStore(modals);
 
 		focusInputElement();
 	});
@@ -149,13 +160,13 @@
 
 	<!-- Purchase summary -->
 	<div class="col-span-3 row-span-6 row-start-1 rounded bg-white p-5 shadow-md">
-		<PurchaseSummary {showPurchaseModal} />
+		<PurchaseSummary {showCheckoutModal} />
 	</div>
 </section>
 
 <SearchProductModal bind:dialog={searchProductModal} />
 <CustomerSearchModal bind:dialog={elementCustomerSearchModal} />
-<CheckoutModal Form={form} bind:dialog={checkoutModal} />
+<CheckoutModal Form={form} bind:dialog={checkoutModal} bind:handleCheckoutModal />
 <DailySalesModal
 	dailySales={$dailySalesStore}
 	on:dailySalesReset={getDailySales}

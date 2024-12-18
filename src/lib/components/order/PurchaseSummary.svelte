@@ -5,7 +5,7 @@
 	import { customerNameFormat, phoneNumberFormat } from '$utils/stringUtils';
 	import { decimalsFixed } from '$utils/numberUtils';
 
-	export let showPurchaseModal;
+	export let showCheckoutModal;
 	const selectedTicket = getContext('selectedTicket');
 
 	let customerName = '',
@@ -93,7 +93,7 @@
 		<button
 			type="button"
 			class="btn btn-accent btn-block btn-sm hover:text-white"
-			on:click={showPurchaseModal}>Completar orden</button
+			on:click={showCheckoutModal}>Completar orden - F12</button
 		>
 	</div>
 </div>

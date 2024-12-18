@@ -1,12 +1,31 @@
 import { writable } from 'svelte/store';
 
 /**
- * @param {HTMLDialogElement[]} initialValues
+ * @typedef {string|null} ModalStore
  */
-export const createModalStore = (initialValues) => {
-	const { subscribe } = writable(initialValues);
+
+const createModalStore = () => {
+	/**
+	 * @type {import('svelte/store').Writable<ModalStore>}
+	 */
+	const { subscribe, set } = writable(null);
+
+	/**
+	 * @param {('search-modal'|'product-modal'|'checkout-modal'|'dailysales-modal')} modal
+	 */
+	const setModal = (modal) => {
+		set(modal);
+	};
+
+	const resetModalStore = () => {
+		set(null);
+	};
 
 	return {
-		subscribe
+		subscribe,
+		setModal,
+		resetModalStore
 	};
 };
+
+export const modalStore = createModalStore();
