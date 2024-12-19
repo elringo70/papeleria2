@@ -82,6 +82,20 @@
 					bind:bindElement={bindInputElement}
 					tabindex="0"
 				/>
+				<!--<label class="form-control w-full">
+					<div class="label">
+						<span class="label-text font-bold">Código</span>
+					</div>
+					<input
+						type="text"
+						class="input input-bordered w-full bg-transparent"
+						name="product"
+						id="product"
+						value={''}
+						bind:this={bindInputElement}
+						tabindex="0"
+					/>
+				</label>-->
 			</div>
 			<div class="basis-3/12">
 				<button type="submit" class="btn hover:text-white btn-block">Agregar</button>

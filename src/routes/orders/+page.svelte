@@ -34,7 +34,6 @@
 	/** @function
 	 * @name handleCheckoutModal */
 	let handleCheckoutModal;
-	/** @type {'checkout-modal'|null} openModal */
 
 	/**
 	 * @param {KeyboardEvent} event
@@ -48,10 +47,6 @@
 		});
 
 		if ($modalStore !== null) {
-			const keys = ['F12', 'F10', 'F6', 'F8'];
-
-			if (keys.includes(event.key)) event.preventDefault();
-
 			switch ($modalStore) {
 				case 'checkout-modal':
 					handleCheckoutModal(event);
@@ -82,8 +77,6 @@
 	};
 
 	const focusInputElement = () => {
-		if (!bindInputElement) return;
-
 		setTimeout(() => {
 			bindInputElement?.focus();
 		}, 100);

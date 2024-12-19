@@ -10,6 +10,7 @@
 	export let required = false;
 	export let bindElement = null;
 	export let placeholderPosition = '';
+	export let tabindex = undefined;
 	export let onChange = () => {};
 	export let onKeydown = () => {};
 	export let onInput = () => {};
@@ -34,6 +35,7 @@
 		{maxlength}
 		step="any"
 		{placeholder}
+		{tabindex}
 		bind:this={bindElement}
 		class={`focus:outline-nonew-full w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-600 ${placeholderPosition} focus:border-gray-500 focus:outline-none
       ${disabled ? 'cursor-default disabled:bg-gray-200' : ''}

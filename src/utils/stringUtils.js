@@ -1,3 +1,4 @@
+/** @param {string} string */
 export const firstUppercase = (string) => {
 	return (
 		string.split('')[0].toUpperCase() +
@@ -5,6 +6,7 @@ export const firstUppercase = (string) => {
 	);
 };
 
+/** @param {string} numbers */
 export const phoneNumberFormat = (numbers) => {
 	const splitNumbers = numbers.split('');
 	splitNumbers.splice(0, 0, '(');

@@ -6,13 +6,29 @@ import { get, writable } from 'svelte/store';
  * @property {string} phone
  * @property {string} name
  * @property {string} lastname
- * @property {string} maternalsurname
+ * @property {string} maternalSurname
  * @property {boolean} active
  * */
 
+/**
+ * @typedef {any} Products
+ */
+
+/**
+ * @typedef {any} Address
+ */
+
+/**
+ * @typedef {Array.<Customer>} initialValues
+ * @param {Customer} customer
+ * @param {Products} products
+ * @param {Address} address
+ * @property {boolean} selectedTicket
+ * @property {boolean} status
+ * @property {boolean} delivered
+ */
 const initialValues = [
 	{
-		/** @param {Customer} customer */
 		customer: {},
 		products: [],
 		total: 0,

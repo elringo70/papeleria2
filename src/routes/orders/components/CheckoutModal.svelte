@@ -38,6 +38,7 @@
 	handleCheckoutModal = (event) => {
 		switch (event.key) {
 			case 'F2':
+				event.preventDefault();
 				checkoutModalForm.requestSubmit();
 				break;
 			case 'F8':
@@ -83,9 +84,7 @@
 		return async ({ result }) => {
 			switch (result.type) {
 				case 'success':
-					dialog.close();
 					completeOrder();
-					resetModal();
 					break;
 				case 'failure':
 					break;
@@ -100,7 +99,9 @@
 
 	const completeOrder = () => {
 		modalStore.resetModalStore();
+		dialog.close();
 		tickets.completeOrder();
+		resetModal();
 		focusInputElement();
 	};
 
@@ -237,6 +238,7 @@
 										onInput={(e) => onInput(e, 'creditDebit')}
 										disabled={!$paymentMethodsStore.creditDebit}
 										required={$paymentMethodsStore.creditDebit}
+										tabindex="0"
 									/>
 								</div>
 							</div>
@@ -343,7 +345,7 @@
 					<div class="flex h-full flex-col justify-end gap-5">
 						{#if $selectedTicket.status && $selectedTicket.delivered}
 							<button type="submit" class="btn btn-block btn-sm" disabled={!submitButtonAvailable}
-								>TERMINAR COMPRA</button
+								>TERMINAR COMPRA - F2</button
 							>
 							<button
 								formaction="?/outstanding"
