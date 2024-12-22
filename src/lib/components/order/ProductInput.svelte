@@ -75,27 +75,20 @@
 	<form action="?/findProduct" method="post" use:enhance={addProductToTicket} autocomplete="off">
 		<div class="flex flex-row items-end w-full gap-5">
 			<div class="basis-9/12">
-				<Input
-					label="Código"
-					name="product"
-					value={''}
-					bind:bindElement={bindInputElement}
-					tabindex="0"
-				/>
-				<!--<label class="form-control w-full">
+				<label class="form-control w-full">
 					<div class="label">
 						<span class="label-text font-bold">Código</span>
 					</div>
 					<input
 						type="text"
-						class="input input-bordered w-full bg-transparent"
+						class="input input-bordered w-full bg-transparent text-gray-500"
 						name="product"
 						id="product"
 						value={''}
 						bind:this={bindInputElement}
 						tabindex="0"
 					/>
-				</label>-->
+				</label>
 			</div>
 			<div class="basis-3/12">
 				<button type="submit" class="btn hover:text-white btn-block">Agregar</button>

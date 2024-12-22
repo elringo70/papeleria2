@@ -79,6 +79,7 @@
 	const focusInputElement = () => {
 		setTimeout(() => {
 			bindInputElement?.focus();
+			bindInputElement?.select();
 		}, 100);
 	};
 

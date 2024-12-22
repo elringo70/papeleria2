@@ -10,9 +10,13 @@ import { writable, get } from 'svelte/store';
  * @prop {number} customerPayment
  * @prop {number} dueBalance
  * @prop {boolean} pendingBalance
+ * @prop {boolean} pendingBalanceText
+ * @prop {boolean} checkboxCash
+ * @prop {boolean} checkboxCreditDebit
+ * @prop {boolean} checkboxETransfer
  */
 
-/** @type {Payment} */
+/** @type {Payment} initialValues */
 const initialValues = {
 	cash: 0,
 	creditDebit: 0,
@@ -20,9 +24,16 @@ const initialValues = {
 	total: 0,
 	customerPayment: 0,
 	dueBalance: 0,
-	pendingBalance: false
+	pendingBalance: false,
+	pendingBalanceText: false,
+	checkboxCash: true,
+	checkboxCreditDebit: false,
+	checkboxETransfer: false
 };
 
+/**
+ * @type {import('svelte/store').Writable<Payment>}
+ */
 const checkoutModalStorage = writable(
 	(browser && JSON.parse(localStorage.getItem('checkoutModal'))) || initialValues
 );
@@ -34,6 +45,10 @@ checkoutModalStorage.subscribe(
 function createCheckouModalStore() {
 	const { subscribe, update, set } = writable(get(checkoutModalStorage));
 
+	/**
+	 * @param {string} attribute
+	 * @param {('cash'|'creditDebit'|'eTransfer')} value
+	 */
 	const setValue = (attribute, value) => {
 		update((store) => ({
 			...store,
@@ -55,6 +70,9 @@ function createCheckouModalStore() {
 		set(initialValues);
 	};
 
+	/**
+	 * @param {number} cash
+	 */
 	const setCash = (cash) => {
 		update((store) => ({
 			...store,
@@ -69,13 +87,44 @@ function createCheckouModalStore() {
 		}));
 	};
 
+	const tooglePendingBalanceText = () => {
+		update((store) => ({
+			...store,
+			pendingBalanceText: !store.pendingBalanceText
+		}));
+	};
+
+	/**
+	 * @param {boolean} value
+	 */
+	const setPendingBalanceText = (value) => {
+		update((store) => ({
+			...store,
+			pendingBalanceText: value
+		}));
+	};
+
+	/**
+	 * @param {('checkboxCash'|'checkboxETransfer'|'checkboxCreditDebit')} method
+	 * @param {boolean} value
+	 */
+	const setPaymentMethod = (method, value) => {
+		update((store) => ({
+			...store,
+			[method]: value
+		}));
+	};
+
 	return {
 		subscribe,
 		setValue,
 		calculateTotal,
 		reset,
 		setCash,
-		tooglePendingBalance
+		tooglePendingBalance,
+		tooglePendingBalanceText,
+		setPendingBalanceText,
+		setPaymentMethod
 	};
 }
 

@@ -1,11 +1,14 @@
 <script>
 	import { getContext } from 'svelte';
 	import { enhance } from '$app/forms';
+
+	/* STORES */
 	import { checkoutModalStore } from '../stores/checkoutModalStore';
 	import { paymentMethodsStore } from '../stores/paymentMethodsStore';
 	import { modalStore } from '../stores/modalsStore';
-
 	import { selectedTicket } from '../stores/store';
+
+	/* COMPONENTS */
 	import { CheckboxPressed, NumberField } from '$lib/components';
 
 	const focusInputElement = getContext('focusInputElement');
@@ -13,17 +16,18 @@
 	export let Form;
 	/** @type {HTMLDialogElement} dialog */
 	export let dialog;
-	/** @type {HTMLInputElement} pendingBalance */
-	let pendingBalance;
 	/** @type {boolean} missingTotal */
 	let missingTotal = false;
 	/** @type {HTMLFormElement} checkoutModalForm */
 	let checkoutModalForm;
 
+	let pendingBalance;
+
 	export let handleCheckoutModal;
 
 	const tickets = getContext('tickets');
 
+	/* 	REACTIVITY VARIABLES */
 	$: customerName = $selectedTicket.customer.name ?? '';
 	$: phone = $selectedTicket.customer.phone ?? '';
 	$: address = $selectedTicket.customer.address
@@ -31,6 +35,9 @@
 		: '';
 	$: submitButtonAvailable =
 		$paymentMethodsStore.cash || $paymentMethodsStore.creditDebit || $paymentMethodsStore.eTransfer;
+
+	/** @type {boolean} paymentMethod */
+	let paymentMethod;
 
 	dialog = () => dialog.close();
 
@@ -58,6 +65,9 @@
 
 		const { status, delivery } = Object.fromEntries(formData);
 
+		const total =
+			$checkoutModalStore.cash + $checkoutModalStore.creditDebit + $checkoutModalStore.eTransfer;
+
 		switch (namedAction) {
 			case 'submitOrder':
 				if ($checkoutModalStore.customerPayment < $selectedTicket.total) {
@@ -71,13 +81,10 @@
 
 				break;
 			case 'outstanding':
-				if (
-					!(pendingBalance.checked && $checkoutModalStore.customerPayment <= $selectedTicket.total)
-				) {
-					pendingBalance.classList.replace('border-gray-300', 'border-red-300');
+				if (total >= $selectedTicket.total) {
+					checkoutModalStore.setPendingBalanceText(true);
 					cancel();
 				}
-
 				break;
 		}
 
@@ -97,6 +104,29 @@
 		checkoutModalStore.tooglePendingBalance();
 	};
 
+	/**
+	 * @param {HTMLInputElement} event
+	 * @param {('checkboxCash'|'checkboxETransfer'|'checkboxCreditDebit')} method
+	 */
+	const setPaymentMethod = (event, method) => {
+		const value = event.target.checked;
+		checkoutModalStore.setPaymentMethod(method, value);
+		paymentMethod = allPaymentMethodsValue(
+			$checkoutModalStore.checkboxCash,
+			$checkoutModalStore.checkboxETransfer,
+			$checkoutModalStore.checkboxCreditDebit
+		);
+	};
+
+	/**
+	 * @param {boolean} a
+	 * @param {boolean} b
+	 * @param {boolean} c
+	 */
+	const allPaymentMethodsValue = (a, b, c) => {
+		return !(a || b || c);
+	};
+
 	const completeOrder = () => {
 		modalStore.resetModalStore();
 		dialog.close();
@@ -113,9 +143,9 @@
 	};
 
 	const resetModal = () => {
-		pendingBalance.classList.replace('border-red-300', 'border-gray-300');
 		checkoutModalStore.reset();
 		paymentMethodsStore.reset();
+		checkoutModalStore.setPendingBalanceText(false);
 	};
 
 	const checkedStatus = () => {
@@ -135,17 +165,6 @@
 		checkoutModalStore.setValue(attribute, event.target.value);
 	};
 
-	/**
-	 * @param {string} attribute
-	 * return {void}
-	 */
-	const onChange = (attribute) => {
-		if ($paymentMethodsStore[attribute]) {
-			checkoutModalStore.setValue(attribute, 0);
-		}
-		paymentMethodsStore.setValue(attribute);
-	};
-
 	const cancelPurchase = () => {
 		modalStore.resetModalStore();
 
@@ -157,6 +176,8 @@
 
 		tickets.setDeliveredStatus(false);
 		tickets.setCheckedStatus(false);
+
+		dialog.close();
 
 		focusInputElement();
 	};
@@ -185,8 +206,8 @@
 								unCheckedText="Efectivo"
 								unCheckedIcon="mdi:cash"
 								checkedIcon="mdi:cash"
-								checked={$paymentMethodsStore.cash}
-								onChange={() => onChange('cash')}
+								checked={$checkoutModalStore.checkboxCash}
+								onChange={(e) => setPaymentMethod(e, 'checkboxCash')}
 							/>
 							<CheckboxPressed
 								name="payment-credit-debit"
@@ -194,8 +215,8 @@
 								unCheckedText="Crédito o Débito"
 								unCheckedIcon="majesticons:creditcard"
 								checkedIcon="majesticons:creditcard"
-								checked={$paymentMethodsStore.creditDebit}
-								onChange={() => onChange('creditDebit')}
+								checked={$checkoutModalStore.checkboxCreditDebit}
+								onChange={(e) => setPaymentMethod(e, 'checkboxCreditDebit')}
 							/>
 							<CheckboxPressed
 								name="payment-e-transfer"
@@ -203,8 +224,8 @@
 								unCheckedText="Transferencia"
 								unCheckedIcon="solar:card-transfer-bold"
 								checkedIcon="solar:card-transfer-bold"
-								checked={$paymentMethodsStore.eTransfer}
-								onChange={() => onChange('eTransfer')}
+								checked={$checkoutModalStore.checkboxETransfer}
+								onChange={(e) => setPaymentMethod(e, 'checkboxETransfer')}
 							/>
 						</div>
 
@@ -219,8 +240,8 @@
 										name="input-cash"
 										value={$checkoutModalStore.cash === 0 ? '' : $checkoutModalStore.cash}
 										onInput={(e) => onInput(e, 'cash')}
-										disabled={!$paymentMethodsStore.cash}
-										required={$paymentMethodsStore.cash}
+										disabled={!$checkoutModalStore.checkboxCash}
+										required={$checkoutModalStore.checkboxCash}
 									/>
 								</div>
 							</div>
@@ -236,8 +257,8 @@
 											? ''
 											: $checkoutModalStore.creditDebit}
 										onInput={(e) => onInput(e, 'creditDebit')}
-										disabled={!$paymentMethodsStore.creditDebit}
-										required={$paymentMethodsStore.creditDebit}
+										disabled={!$checkoutModalStore.checkboxCreditDebit}
+										required={$checkoutModalStore.checkboxCreditDebit}
 										tabindex="0"
 									/>
 								</div>
@@ -247,13 +268,23 @@
 									<p class="text-xl font-medium text-gray-700">Transferencia</p>
 								</div>
 								<div class="basis-2/3">
-									<NumberField
+									<!--<NumberField
 										placeholder="$ 0.00"
 										name="input-e-transfer"
 										value={$checkoutModalStore.eTransfer === 0 ? '' : $checkoutModalStore.eTransfer}
 										onInput={(e) => onInput(e, 'eTransfer')}
-										disabled={!$paymentMethodsStore.eTransfer}
-										required={$paymentMethodsStore.eTransfer}
+										disabled={!$checkoutModalStore.checkboxETransfer}
+										required={$checkoutModalStore.checkboxETransfer}
+									/>-->
+									<input
+										class="input input-bordered w-full bg-transparent"
+										type="number"
+										placeholder="$ 0.00"
+										name="input-e-transfer"
+										value={$checkoutModalStore.eTransfer === 0 ? '' : $checkoutModalStore.eTransfer}
+										on:input={(e) => onInput(e, 'eTransfer')}
+										disabled={!$checkoutModalStore.checkboxETransfer}
+										required={$checkoutModalStore.checkboxETransfer}
 									/>
 								</div>
 							</div>
@@ -262,15 +293,21 @@
 								<div class="mb-3 flex basis-1/3 items-end justify-end">
 									<p class="text-xl font-medium text-gray-700">Saldo pendiente</p>
 								</div>
-								<div class="basis-2/3">
+								<div class="basis-2/3 flex">
 									<input
 										name="pending-balance"
 										type="checkbox"
 										class="checkbox checkbox-primary border-gray-300"
 										checked={$checkoutModalStore.pendingBalance}
+										disabled={!($selectedTicket.status && $selectedTicket.delivered)}
 										bind:this={pendingBalance}
 										on:change={setPendingBalance}
 									/>
+									{#if $checkoutModalStore.pendingBalanceText}
+										<span class="pl-3 items-center font-medium text-red-500"
+											>Debe ser menor al pago</span
+										>
+									{/if}
 								</div>
 							</div>
 						</div>
@@ -344,14 +381,18 @@
 				<div class="col-span-1 row-span-1">
 					<div class="flex h-full flex-col justify-end gap-5">
 						{#if $selectedTicket.status && $selectedTicket.delivered}
-							<button type="submit" class="btn btn-block btn-sm" disabled={!submitButtonAvailable}
+							<button
+								type="submit"
+								class="btn btn-block btn-sm"
+								disabled={$checkoutModalStore.pendingBalance || paymentMethod}
 								>TERMINAR COMPRA - F2</button
 							>
+
 							<button
 								formaction="?/outstanding"
 								class="btn btn-primary btn-sm"
 								disabled={!$checkoutModalStore.pendingBalance || !submitButtonAvailable}
-								>SALDO PENDIENTE</button
+								>SALDO PENDIENTE - F12</button
 							>
 						{:else}
 							<button

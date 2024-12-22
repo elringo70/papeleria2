@@ -9,10 +9,13 @@ const initialValues = {
 function createPaymentMethodsStore() {
 	const { subscribe, update, set } = writable(initialValues);
 
-	const setValue = (attrubite) => {
+	/**
+	 * @param {string} attribute
+	 */
+	const setValue = (attribute) => {
 		update((store) => ({
 			...store,
-			[attrubite]: !store[attrubite]
+			[attribute]: !store[attribute]
 		}));
 	};
 
