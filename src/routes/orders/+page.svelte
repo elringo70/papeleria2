@@ -17,6 +17,7 @@
 	import CustomerSearchModal from './components/CustomerSearchModal.svelte';
 	import SearchProductModal from './components/SearchProductModal.svelte';
 	import DailySalesModal from './components/DailySalesModal.svelte';
+	import { goto, preloadData, pushState } from '$app/navigation';
 
 	/** @type {import('./$types').ActionData} */
 	export let form;

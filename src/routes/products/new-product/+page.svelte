@@ -5,7 +5,7 @@
 
 	import { confirmModal } from '$utils/modalButton';
 
-	import { Input, Select, Checkbox, NumberField, InputFile } from '$lib/components';
+	import { firstUppercase } from '$utils/stringUtils.js';
 
 	export let form;
 	export let data;
@@ -13,30 +13,38 @@
 	$: errors;
 
 	let loading = false;
-	console.log(data.categories);
 
-	const submitProduct = ({ form, data }) => {
+	let isChecked = true;
+
+	let stock = form?.data?.stock ?? '';
+	let stockMinimum = form?.data?.stockMinimum ?? '';
+	$: stock;
+	$: stockMinimum;
+
+	const handleSubmit = ({ formElement, formData, cancel }) => {
 		loading = true;
+
+		const { cost, price, wholesale, requiredStock } = Object.fromEntries(formData);
+
+		if (cost >= price || wholesale >= price || wholesale >= cost) {
+			Swal.fire({
+				icon: 'warning',
+				text: 'Precio o mayoreo debe ser menor a costo',
+				confirmButtonColor: '#3085d6'
+			});
+
+			cancel();
+			loading = false;
+		}
 
 		return async ({ result }) => {
 			errors = result?.data?.errors;
+
 			switch (result.type) {
 				case 'success':
-					const body = Object.fromEntries(data);
+					formElement.reset();
 
-					form._id.value = '';
-					form.product.value = '';
-					form.brand.value = '';
-					form.model.value = '';
-					form.category.value = '';
-					form.cost.value = '';
-					form.price.value = '';
-					form.wholesale.value = '';
-					form.stock.value = '';
-					form.stockMinimum.value = '';
-					form.image.value = '';
-
-					if (!body.requiredStock) {
+					if (requiredStock !== 'on') {
 						isChecked = true;
 
 						stock = '';
@@ -68,14 +76,6 @@
 		};
 	};
 
-	//Stock conditional validation
-	let isChecked = true;
-
-	let stock = form?.data?.stock ?? '';
-	let stockMinimum = form?.data?.stockMinimum ?? '';
-	$: stock;
-	$: stockMinimum;
-
 	const resetStockInputs = () => {
 		isChecked = !isChecked;
 
@@ -104,147 +104,258 @@
 
 <section class="flex h-[calc(100vh-56px)] items-center justify-center bg-gray-100">
 	<div class="container mx-auto w-8/12 rounded bg-white p-5 shadow-lg">
-		<div class="mb-7">
+		<div class="mb-3">
 			<h3 class="text-2xl font-semibold text-gray-800">Producto nuevo</h3>
 			<p class="text-gray-400">Crear un nuevo producto</p>
 		</div>
+
 		<form
 			action="?/submit"
 			method="post"
-			use:enhance={submitProduct}
+			use:enhance={handleSubmit}
 			autocomplete="off"
 			enctype="multipart/form-data"
 		>
-			<div class="flex flex-row space-x-4">
-				<div class="basis-4/12">
-					<Input
-						label="Código"
-						name="_id"
-						required={true}
-						value={form?.data?._id ?? ''}
-						errors={errors?._id}
-					/>
-				</div>
-				<div class="basis-4/12">
-					<Input
-						label="Producto"
-						name="product"
-						placeholder="Nombre del producto"
-						required={true}
-						value={form?.data?.product ?? ''}
-						errors={errors?.product}
-					/>
-				</div>
-				<div class="basis-4/12">
-					<Input
-						label="Marca"
-						name="brand"
-						placeholder="Marca del producto"
-						value={form?.data?.brand ?? ''}
-						errors={errors?.brand}
-					/>
-				</div>
-			</div>
+			<div class="flex flex-col">
+				<div class="flex flex-row space-x-6">
+					<label class="form-control w-full">
+						<div class="label">
+							<span class="label-text font-semibold">* Código</span>
+							{#if errors?._id}
+								<span class="label-text-alt">{errors?._id[0]}</span>
+							{/if}
+						</div>
+						<input
+							type="text"
+							class="input input-bordered md:input-sm w-full {errors?._id ? 'input-error' : ''}"
+							placeholder="5901234123457"
+							name="_id"
+							required
+							value={form?.data?._id ?? ''}
+						/>
+					</label>
 
-			<div class="flex flex-row space-x-4">
-				<div class="basis-5/12">
-					<Input
-						label="Modelo"
-						name="model"
-						value={form?.data?.model ?? ''}
-						errors={errors?.model}
-					/>
-				</div>
-				<div class="basis-5/12">
-					<Select
-						label="Categorias"
-						name="category"
-						options={data?.categories}
-						required={true}
-						value={form?.data?.category ?? ''}
-						valueOption="_id"
-						errors={errors?.category}
-					/>
-				</div>
-			</div>
+					<label class="form-control w-full">
+						<div class="label">
+							<span class="label-text font-semibold">* Producto</span>
+							{#if errors?.product}
+								<span class="label-text-alt">{errors?.product[0]}</span>
+							{/if}
+						</div>
+						<input
+							type="text"
+							class="input input-bordered md:input-sm w-full {errors?.product ? 'input-error' : ''}"
+							placeholder="Lapiz"
+							name="product"
+							required
+							value={form?.data?.product ?? ''}
+						/>
+					</label>
 
-			<div class="flow-row flex space-x-4">
-				<div class="basis-4/12">
-					<NumberField
-						label="Costo"
-						name="cost"
-						value={form?.data?.cost}
-						errors={errors?.cost}
-						required={true}
-					/>
-				</div>
-				<div class="basis-4/12">
-					<NumberField
-						label="Precio"
-						name="price"
-						value={form?.data?.price}
-						errors={errors?.price}
-						required={true}
-					/>
-				</div>
-				<div class="basis-4/12">
-					<NumberField
-						label="Precio de mayoreo"
-						name="wholesale"
-						value={form?.data?.wholesale}
-						errors={errors?.wholesale}
-					/>
-				</div>
-			</div>
-
-			<div class="flex flex-row items-center space-x-4">
-				<div class="basis-3/12">
-					<NumberField
-						label="Cantidad"
-						name="stock"
-						bind:value={stock}
-						errors={errors?.stock}
-						disabled={!isChecked}
-						required={true}
-					/>
-				</div>
-				<div class="basis-3/12">
-					<NumberField
-						label="Cantidad mínima"
-						name="stockMinimum"
-						bind:value={stockMinimum}
-						errors={errors?.stockMinimum}
-						disabled={!isChecked}
-						required={true}
-					/>
-				</div>
-				<div class="basis-4/12">
-					<Checkbox
-						label="¿Requiere inventario?"
-						name="requiredStock"
-						bind:checked={isChecked}
-						onChange={resetStockInputs}
-					/>
-				</div>
-			</div>
-
-			<div class="flex flex-row items-end justify-between space-x-4">
-				<div class="basis-2/3">
-					<InputFile
-						label="Imagen"
-						name="image"
-						accept="image/jpg, image/jpeg, image/png, image/webp"
-					/>
+					<label class="form-control w-full">
+						<div class="label">
+							<span class="label-text">Marca</span>
+							{#if errors?.brand}
+								<span class="label-text-alt">{errors?.brand[0]}</span>
+							{/if}
+						</div>
+						<input
+							type="text"
+							class="input input-bordered md:input-sm w-full {errors?.brand
+								? 'input-bordered'
+								: ''}"
+							placeholder="Berol"
+							name="brand"
+							value={form?.data?.brand ?? ''}
+						/>
+					</label>
 				</div>
 
-				<div class="flex basis-1/3">
-					<button
-						type="submit"
-						class="w-full rounded bg-indigo-700 px-4 py-2 text-white shadow shadow-indigo-700 hover:bg-indigo-600"
-						disabled={loading}>Guardar</button
-					>
+				<div class="flex flex-row space-x-4">
+					<label class="form-control w-full">
+						<div class="label">
+							<span class="label-text">Modelo</span>
+							{#if errors?.model}
+								<span class="label-text-alt">{errors?.model[0]}</span>
+							{/if}
+						</div>
+						<input
+							type="text"
+							class="input input-bordered md:input-sm w-full {errors?.model ? 'input-error' : ''}"
+							placeholder="Berol"
+							name="model"
+							value={form?.data?.model ?? ''}
+						/>
+					</label>
+
+					<label class="form-control w-full max-w-xs">
+						<div class="label">
+							<span class="label-text font-semibold">* Categoría</span>
+							{#if errors?.category}
+								<span class="label-text-alt">{errors?.category[0]}</span>
+							{/if}
+						</div>
+						<select
+							class="select select-bordered md:select-sm w-full {errors?.category
+								? 'select-error'
+								: ''}"
+							name="category"
+							required
+							value={form?.data?.category ?? 'Categoría'}
+							errors={errors?.category}
+						>
+							<option disabled selected>Categoría</option>
+							{#each data?.categories as category}
+								<option value={category._id}>{firstUppercase(category.name)}</option>
+							{/each}
+						</select>
+					</label>
+				</div>
+
+				<div class="flow-row flex space-x-6">
+					<label class="form-control w-full">
+						<div class="label">
+							<span class="label-text font-semibold">* Costo</span>
+							{#if errors?.cost}
+								<span class="label-text-alt">{errors?.cost[0]}</span>
+							{/if}
+						</div>
+						<input
+							type="number"
+							class="input input-bordered md:input-sm w-full {errors?.cost ? 'input-error' : ''}"
+							placeholder="$ 3.5"
+							name="cost"
+							required
+							value={form?.data?.cost ?? ''}
+							min="0"
+							step="0.1"
+						/>
+					</label>
+					<label class="form-control w-full">
+						<div class="label">
+							<span class="label-text font-semibold">* Precio</span>
+							{#if errors?.price}
+								<span class="label-text-alt">{errors?.price[0]}</span>
+							{/if}
+						</div>
+						<input
+							type="number"
+							class="input input-bordered md:input-sm w-full {errors?.price ? 'input-error' : ''}"
+							placeholder="$ 7"
+							name="price"
+							required
+							value={form?.data?.price ?? ''}
+							min="0"
+							step="0.1"
+						/>
+					</label>
+					<label class="form-control w-full">
+						<div class="label">
+							<span class="label-text font-semibold">Precio de mayoreo</span>
+							{#if errors?.wholesale}
+								<span class="label-text-alt">{errors?.wholesale[0]}</span>
+							{/if}
+						</div>
+						<input
+							type="number"
+							class="input input-bordered md:input-sm w-full {errors?.wholesale
+								? 'input-error'
+								: ''}"
+							placeholder="$ 7"
+							name="wholesale"
+							value={form?.data?.wholesale ?? ''}
+							min="0"
+							step="0.1"
+						/>
+					</label>
+				</div>
+
+				<div class="flex flex-row space-x-4 mb-5 items-end">
+					<label class="form-control w-full">
+						<div class="label">
+							<span class="label-text {isChecked ? 'font-semibold' : 'font-normal text-gray-400'}"
+								>{isChecked ? '* ' : ''}Inventario</span
+							>
+							{#if errors?.stock}
+								<span class="label-text-alt">{errors?.stock[0]}</span>
+							{/if}
+						</div>
+						<input
+							type="number"
+							class="input input-bordered md:input-sm w-full {errors?.stock
+								? 'input-error'
+								: ''} {isChecked ? '' : 'cursor-not-allowed'}"
+							name="stock"
+							bind:value={stock}
+							disabled={!isChecked}
+							required
+						/>
+					</label>
+					<label class="form-control w-full">
+						<div class="label">
+							<span class="label-text {isChecked ? 'font-semibold' : 'font-normal text-gray-400'}"
+								>{isChecked ? '* ' : ''}Inventario mínimo</span
+							>
+							{#if errors?.stockMinimum}
+								<span class="label-text-alt">{errors?.stockMinimum[0]}</span>
+							{/if}
+						</div>
+						<input
+							type="number"
+							class="input input-bordered md:input-sm w-full {errors?.stockMinimum
+								? 'input-error'
+								: ''} {isChecked ? '' : 'cursor-not-allowed'}"
+							name="stockMinimum"
+							bind:value={stockMinimum}
+							disabled={!isChecked}
+							required
+						/>
+					</label>
+					<div class="basis-4/12">
+						<div class="form-control">
+							<label class="label cursor-pointer">
+								<span class="label-text">¿Requiere inventario?</span>
+								<input
+									type="checkbox"
+									class="checkbox"
+									name="requiredStock"
+									checked={isChecked}
+									on:change={resetStockInputs}
+								/>
+							</label>
+						</div>
+					</div>
+				</div>
+
+				<div class="flex flex-row space-x-4">
+					<div class="basis-2/3">
+						<input
+							type="file"
+							class="file-input file-input-bordered w-full"
+							name="image"
+							accept="image/jpg, image/jpeg, image/png, image/webp"
+						/>
+					</div>
+
+					<div class="flex basis-1/3">
+						<button class="btn btn-neutral w-full" type="submit" disabled={loading}>
+							{#if loading}
+								<span class="loading loading-dots loading-md"></span>
+							{:else}
+								Guardar
+							{/if}
+						</button>
+					</div>
 				</div>
 			</div>
 		</form>
 	</div>
 </section>
+
+<style>
+	input[type='number']::-webkit-inner-spin-button,
+	input[type='number']::-webkit-outer-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
+</style>

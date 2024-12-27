@@ -38,10 +38,6 @@ const checkoutModalStorage = writable(
 	(browser && JSON.parse(localStorage.getItem('checkoutModal'))) || initialValues
 );
 
-checkoutModalStorage.subscribe(
-	(values) => browser && localStorage.setItem('checkoutModalStorage', JSON.stringify(values))
-);
-
 function createCheckouModalStore() {
 	const { subscribe, update, set } = writable(get(checkoutModalStorage));
 

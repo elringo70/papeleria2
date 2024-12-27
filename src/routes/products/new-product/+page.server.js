@@ -31,12 +31,13 @@ export const actions = {
 			await dbConnect();
 
 			const form = await request.formData();
+
 			const { formData, errors } = await validateData(form, productSchema);
 
 			const imageFile = form.get('image');
 
-			let url;
-			if (imageFile) {
+			let url = undefined;
+			if (imageFile.size > 0) {
 				url = await uploadImageToFirestorage(imageFile);
 			}
 

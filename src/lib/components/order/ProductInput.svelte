@@ -4,8 +4,6 @@
 	import { selectedTicket } from '../../../routes/orders/stores/store';
 	import Swal from 'sweetalert2';
 
-	import { Input } from '$lib/components';
-
 	const tickets = getContext('tickets');
 	const focusInputElement = getContext('focusInputElement');
 
@@ -51,7 +49,7 @@
 
 		return async ({ result }) => {
 			const { type, data } = result;
-
+			console.log(result);
 			switch (type) {
 				case 'success':
 					addProduct(data.product);

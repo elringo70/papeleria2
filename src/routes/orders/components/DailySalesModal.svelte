@@ -6,7 +6,6 @@
 	import Swal from 'sweetalert2';
 
 	import { dailySalesStore, selectedTicket } from '../stores/dailySalesStore';
-	import { Input } from '$lib/components';
 	import { decimalsFixed } from '$utils/numberUtils';
 
 	const focusInputElement = getContext('focusInputElement');
@@ -93,17 +92,6 @@
 			dialog.showModal();
 		}
 	}
-
-	onMount(() => {
-		addEventListener('keydown', function (event) {
-			switch (event.key) {
-				case 'Escape':
-					reset();
-					focusInputElement();
-					break;
-			}
-		});
-	});
 </script>
 
 <dialog class="modal" bind:this={dialog} data-modal="dailysales-modal">
@@ -112,8 +100,14 @@
 			<div class="title">
 				<h1 class="pb-2 text-center align-middle text-3xl text-gray-700">Ventas del día</h1>
 			</div>
-			<div class="search grid-item item">
-				<Input placeholder="Buscar venta" name="search" />
+			<div class="search grid-item p-1 outline-none">
+				<input
+					class="input input-bordered w-full search"
+					type="text"
+					placeholder="Buscar venta"
+					name="search"
+					id="search"
+				/>
 			</div>
 
 			<div class="ticket-detail grid-item item overflow-x-auto">

@@ -121,17 +121,33 @@
 			<h1 class="mb-8 text-center text-3xl">Log in</h1>
 
 			<form method="post" autocomplete="off" on:submit|preventDefault={loginWithEmailAndPassword}>
-				<Input placeholder="Correo electrónico" name="email" type="email" required={true} />
-				<Input placeholder="Contraseña" name="password" type="password" required={true} />
+				<div class="flex flex-col">
+					<input
+						type="email"
+						name="email"
+						id="email"
+						required={true}
+						class="input input-bordered mb-3"
+						placeholder="Correo electrónico"
+					/>
+					<input
+						type="password"
+						name="password"
+						id="password"
+						required={true}
+						class="input input-bordered mb-6"
+						placeholder="Contraseña"
+					/>
 
-				<button type="submit" class="btn btn-block" {disabled}>
-					{#if disabled}
-						<span class="loading loading-dots loading-md"></span>
-						loading
-					{:else}
-						Ingresar
-					{/if}
-				</button>
+					<button type="submit" class="btn btn-block" {disabled}>
+						{#if disabled}
+							<span class="loading loading-dots loading-md"></span>
+							loading
+						{:else}
+							Ingresar
+						{/if}
+					</button>
+				</div>
 			</form>
 			<div class="text-grey-dark mt-4 text-center text-sm">
 				<a class="border-grey-dark text-grey-dark border-b no-underline" href="/signup">

@@ -5,9 +5,10 @@
 	import Swal from 'sweetalert2';
 	import Icon from '@iconify/svelte';
 
+	import { Input } from '$lib/components';
+
 	import { searchProductStore, selectedProduct } from '../stores/searchProductStore';
 
-	import { Input } from '$lib/components';
 	import { modalStore } from '../stores/modalsStore';
 
 	/** @type {HTMLDialogElement} dialog */
@@ -39,6 +40,7 @@
 		};
 	};
 
+	/** @param {KeyboardEvent} event */
 	const holdOnInput = (event) => {
 		clearTimeout(timer);
 
@@ -96,23 +98,20 @@
 		modalStore.resetModalStore();
 		dialog.close();
 		resetTable();
+		focusInputElement();
 	};
 
 	/** @param {KeyboardEvent} event */
 	const selectOnEnter = (event) => {
-		if (typeof $selectedProduct === 'number') {
-			switch (event.key) {
-				case 'Enter':
-					event.preventDefault();
-					selectProduct($searchProductStore[$selectedProduct]);
-					focusInputElement();
-					break;
-				case 'Escape':
-					modalSize.classList.add('h-36');
-					modalSize.classList.remove('h-[70vh]');
-					resetTable();
-					break;
-			}
+		switch (event.key) {
+			case 'Enter':
+				event.preventDefault();
+				selectProduct($searchProductStore[$selectedProduct]);
+				focusInputElement();
+				break;
+			case 'Escape':
+				closeModal();
+				break;
 		}
 	};
 

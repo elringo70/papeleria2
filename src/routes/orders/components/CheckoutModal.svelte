@@ -9,7 +9,8 @@
 	import { selectedTicket } from '../stores/store';
 
 	/* COMPONENTS */
-	import { CheckboxPressed, NumberField } from '$lib/components';
+	import { CheckboxPressed } from '$lib/components';
+	import Alert from '$lib/components/Alert.svelte';
 
 	const focusInputElement = getContext('focusInputElement');
 
@@ -20,6 +21,8 @@
 	let missingTotal = false;
 	/** @type {HTMLFormElement} checkoutModalForm */
 	let checkoutModalForm;
+	/** @type {HTMLInputElement} cashInput */
+	let cashInput;
 
 	let pendingBalance;
 
@@ -79,6 +82,14 @@
 					cancel();
 				}
 
+				if (
+					$checkoutModalStore.creditDebit + $checkoutModalStore.eTransfer >=
+					$checkoutModalStore.cash
+				) {
+					checkoutModalStore.setPendingBalanceText(true);
+					cancel();
+				}
+
 				break;
 			case 'outstanding':
 				if (total >= $selectedTicket.total) {
@@ -110,7 +121,23 @@
 	 */
 	const setPaymentMethod = (event, method) => {
 		const value = event.target.checked;
+
 		checkoutModalStore.setPaymentMethod(method, value);
+
+		if (!value) {
+			switch (method) {
+				case 'checkboxCash':
+					checkoutModalStore.setValue('cash', 0);
+					break;
+				case 'checkboxETransfer':
+					checkoutModalStore.setValue('eTransfer', 0);
+					break;
+				case 'checkboxCreditDebit':
+					checkoutModalStore.setValue('creditDebit', 0);
+					break;
+			}
+		}
+
 		paymentMethod = allPaymentMethodsValue(
 			$checkoutModalStore.checkboxCash,
 			$checkoutModalStore.checkboxETransfer,
@@ -193,9 +220,9 @@
 			bind:this={checkoutModalForm}
 		>
 			<div class="grid grid-cols-3 grid-rows-3 gap-5">
-				<div class="col-span-2 row-span-3 border-2 border-gray-200 p-3">
+				<div class="col-span-2 row-span-3 border rounded border-gray-300 p-3">
 					<div class="flex h-full flex-col justify-between gap-5">
-						<h1 class="text-center text-7xl text-gray-700">
+						<h1 class="text-center font-bold text-7xl text-gray-700">
 							$ {$selectedTicket.total}
 						</h1>
 
@@ -229,19 +256,22 @@
 							/>
 						</div>
 
-						<div>
+						<div class="flex flex-col gap-3">
 							<div class="flex gap-5">
 								<div class="mb-3 flex basis-1/3 items-end justify-end">
 									<p class="text-xl font-medium text-gray-700">Efectivo</p>
 								</div>
 								<div class="basis-2/3">
-									<NumberField
+									<input
+										class="input input-bordered w-full bg-transparent md:input-sm"
+										type="number"
 										placeholder="$ 0.00"
 										name="input-cash"
 										value={$checkoutModalStore.cash === 0 ? '' : $checkoutModalStore.cash}
-										onInput={(e) => onInput(e, 'cash')}
+										on:input={(e) => onInput(e, 'cash')}
 										disabled={!$checkoutModalStore.checkboxCash}
 										required={$checkoutModalStore.checkboxCash}
+										bind:this={cashInput}
 									/>
 								</div>
 							</div>
@@ -250,16 +280,17 @@
 									<p class="text-xl font-medium text-gray-700">Crédito o Débito</p>
 								</div>
 								<div class="basis-2/3">
-									<NumberField
+									<input
+										class="input input-bordered w-full bg-transparent md:input-sm"
+										type="number"
 										placeholder="$ 0.00"
 										name="input-credit-debit"
 										value={$checkoutModalStore.creditDebit === 0
 											? ''
 											: $checkoutModalStore.creditDebit}
-										onInput={(e) => onInput(e, 'creditDebit')}
+										on:input={(e) => onInput(e, 'creditDebit')}
 										disabled={!$checkoutModalStore.checkboxCreditDebit}
 										required={$checkoutModalStore.checkboxCreditDebit}
-										tabindex="0"
 									/>
 								</div>
 							</div>
@@ -268,16 +299,8 @@
 									<p class="text-xl font-medium text-gray-700">Transferencia</p>
 								</div>
 								<div class="basis-2/3">
-									<!--<NumberField
-										placeholder="$ 0.00"
-										name="input-e-transfer"
-										value={$checkoutModalStore.eTransfer === 0 ? '' : $checkoutModalStore.eTransfer}
-										onInput={(e) => onInput(e, 'eTransfer')}
-										disabled={!$checkoutModalStore.checkboxETransfer}
-										required={$checkoutModalStore.checkboxETransfer}
-									/>-->
 									<input
-										class="input input-bordered w-full bg-transparent"
+										class="input input-bordered w-full bg-transparent md:input-sm"
 										type="number"
 										placeholder="$ 0.00"
 										name="input-e-transfer"
@@ -313,7 +336,7 @@
 						</div>
 
 						<div>
-							<div class="flex justify-end gap-5">
+							<div class="flex justify-end">
 								<p
 									class={`text-2xl font-medium ${missingTotal ? 'text-red-600' : 'text-gray-900'}`}
 								>
@@ -339,7 +362,7 @@
 					</div>
 				</div>
 
-				<div class="col-span-1 row-span-2 border-2 border-gray-200 p-3">
+				<div class="col-span-1 row-span-2 border rounded border-gray-300 p-3">
 					<div class="flex h-full flex-col justify-between">
 						<div>
 							<h4 class="text-md text-center font-bold text-gray-600">RESUMEN DE COMPRA</h4>
@@ -443,5 +466,11 @@
 
 	.btn:hover {
 		color: white;
+	}
+
+	input[type='number']::-webkit-inner-spin-button,
+	input[type='number']::-webkit-outer-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
 	}
 </style>
