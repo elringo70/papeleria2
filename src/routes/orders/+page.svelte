@@ -17,7 +17,6 @@
 	import CustomerSearchModal from './components/CustomerSearchModal.svelte';
 	import SearchProductModal from './components/SearchProductModal.svelte';
 	import DailySalesModal from './components/DailySalesModal.svelte';
-	import { goto, preloadData, pushState } from '$app/navigation';
 
 	/** @type {import('./$types').ActionData} */
 	export let form;
@@ -30,22 +29,38 @@
 	let elementCustomerSearchModal;
 	/** @type {HTMLDialogElement} dailySalesModal */
 	let dailySalesModal;
-	/** @type {HTMLElement} bindInputElement */
-	let bindInputElement;
 	/** @function
 	 * @name handleCheckoutModal */
 	let handleCheckoutModal;
+	/** @type {Array.<HTMLDialogElement>} modals */
+	let modals;
+	let bindInputElement;
+
+	const focusInputElement = () => {
+		setTimeout(() => {
+			bindInputElement.focus();
+			bindInputElement.select();
+		}, 100);
+	};
 
 	/**
 	 * @param {KeyboardEvent} event
 	 * @returns {void}
 	 */
 	const onKeyDown = (event) => {
-		const modals = [checkoutModal, searchProductModal, elementCustomerSearchModal, dailySalesModal];
-
-		modals.forEach((modal) => {
-			if (modal.hasAttribute('open')) modalStore.setModal(modal.getAttribute('data-modal'));
-		});
+		switch (event.key) {
+			case 'F6':
+			case 'F8':
+			case 'F10':
+			case 'F12':
+				modals.forEach((modal) => {
+					if (modal.hasAttribute('open')) modalStore.setModal(modal.getAttribute('data-modal'));
+				});
+				break;
+			case 'Escape':
+				focusInputElement();
+				break;
+		}
 
 		if ($modalStore !== null) {
 			switch ($modalStore) {
@@ -54,7 +69,9 @@
 					break;
 			}
 
-			if (event.key === 'Escape') modalStore.resetModalStore();
+			if (event.key === 'Escape') {
+				modalStore.resetModalStore();
+			}
 		} else {
 			switch (event.key) {
 				case 'F6':
@@ -75,13 +92,6 @@
 					break;
 			}
 		}
-	};
-
-	const focusInputElement = () => {
-		setTimeout(() => {
-			bindInputElement?.focus();
-			bindInputElement?.select();
-		}, 100);
 	};
 
 	const getDailySales = async () => {
@@ -120,7 +130,7 @@
 
 	onMount(() => {
 		bindInputElement = document.getElementById('product');
-
+		modals = [checkoutModal, searchProductModal, elementCustomerSearchModal, dailySalesModal];
 		focusInputElement();
 	});
 

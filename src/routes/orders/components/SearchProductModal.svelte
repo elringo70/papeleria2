@@ -5,11 +5,12 @@
 	import Swal from 'sweetalert2';
 	import Icon from '@iconify/svelte';
 
-	import { Input } from '$lib/components';
-
 	import { searchProductStore, selectedProduct } from '../stores/searchProductStore';
 
 	import { modalStore } from '../stores/modalsStore';
+
+	const focusInputElement = getContext('focusInputElement');
+	const tickets = getContext('tickets');
 
 	/** @type {HTMLDialogElement} dialog */
 	export let dialog;
@@ -20,9 +21,6 @@
 	/** @type {HTMLElement} modalSize */
 	let modalSize;
 	let timer;
-
-	const focusInputElement = getContext('focusInputElement');
-	const tickets = getContext('tickets');
 
 	const handleSubmit = ({ formData, cancel }) => {
 		const { product } = Object.fromEntries(formData);
@@ -79,7 +77,7 @@
 						title: 'Sin existencia',
 						icon: 'warning'
 					});
-				}, 100);
+				}, 300);
 			} else {
 				tickets.addProductToTicket(product);
 				resetTable();
@@ -103,15 +101,19 @@
 
 	/** @param {KeyboardEvent} event */
 	const selectOnEnter = (event) => {
-		switch (event.key) {
-			case 'Enter':
-				event.preventDefault();
-				selectProduct($searchProductStore[$selectedProduct]);
-				focusInputElement();
-				break;
-			case 'Escape':
-				closeModal();
-				break;
+		if (dialog.hasAttribute('open')) {
+			switch (event.key) {
+				case 'Enter':
+					event.preventDefault();
+					if ($selectedProduct !== null) {
+						selectProduct($searchProductStore[$selectedProduct]);
+						focusInputElement();
+					}
+					break;
+				case 'Escape':
+					closeModal();
+					break;
+			}
 		}
 	};
 
@@ -129,7 +131,7 @@
 	>
 		<div class="h-full flex flex-col gap-y-5">
 			<div class="">
-				<h1 class="text-center text-3xl text-gray-700">Buscar producto</h1>
+				<h1 class="text-center text-3xl text-gray-700 mb-3">Buscar producto</h1>
 				<form
 					bind:this={form}
 					action="?/searchProduct"
@@ -138,11 +140,13 @@
 					autocomplete="off"
 				>
 					<div class="flex h-full items-center gap-5">
-						<Input
+						<input
+							class="input input-bordered w-full"
+							type="text"
 							name="product"
-							placeholder="Producto"
-							bind:bindElement={inputProduct}
-							onKeyup={holdOnInput}
+							placeholder="Nombre del producto"
+							bind:this={inputProduct}
+							on:keyup={holdOnInput}
 						/>
 
 						<button type="submit" class="btn btn-accent hover:text-white">Buscar</button>

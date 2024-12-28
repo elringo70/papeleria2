@@ -1,15 +1,12 @@
 <script>
-	import { afterUpdate, getContext } from 'svelte';
+	import { getContext } from 'svelte';
 	import { enhance } from '$app/forms';
 
-	import { NumberField } from '$lib/components';
 	import Swal from 'sweetalert2/dist/sweetalert2.all';
 
 	/** @type {HTMLDialogElement} dialog */
 	export let dialog;
 	const tickets = getContext('tickets');
-	/** @type {HTMLInputElement} inputElement */
-	let inputElement;
 
 	const setCustomerTicket = () => {
 		return async ({ result, update }) => {
@@ -37,32 +34,22 @@
 			await update();
 		};
 	};
-
-	afterUpdate(async () => {
-		if (inputElement) {
-			setTimeout(() => {
-				inputElement.focus();
-			}, 100);
-		}
-	});
 </script>
 
 <dialog class="modal" bind:this={dialog} data-modal="">
-	<div class="modal-box w-1/3 max-w-none rounded-none bg-white text-gray-700">
-		<h3 class="text-lg font-bold">Buscar cliente</h3>
+	<div class="modal-box rounded bg-white">
+		<h3 class="text-lg font-bold mb-3">Buscar cliente</h3>
 		<form action="?/findCustomer" use:enhance={setCustomerTicket} method="post" autocomplete="off">
-			<NumberField
-				placeholder="Numero del cliente"
+			<input
+				class="input input-bordered w-full"
+				type="number"
+				placeholder="Numero de cliente"
 				name="phone"
-				minlength="10"
-				maxlength="10"
 				required
 			/>
 			<div class="modal-action">
-				<button class="btn btn-error hover:text-white" type="button" on:click={dialog.close()}
-					>Cancelar</button
-				>
-				<button class="btn hover:text-white" type="submit">Buscar</button>
+				<button class="btn btn-error" type="button" on:click={dialog.close()}>Cancelar</button>
+				<button class="btn btn-neutral" type="submit">Buscar</button>
 			</div>
 		</form>
 	</div>
@@ -71,5 +58,11 @@
 <style>
 	.btn {
 		color: white;
+	}
+
+	input[type='number']::-webkit-inner-spin-button,
+	input[type='number']::-webkit-outer-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
 	}
 </style>

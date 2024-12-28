@@ -92,7 +92,20 @@
 			dialog.showModal();
 		}
 	}
+
+	/** @param {KeyboardEvent} event */
+	const onKeyDown = (event) => {
+		if (dialog.hasAttribute('open')) {
+			switch (event.key) {
+				case 'Escape':
+					closeDailySalesModal();
+					break;
+			}
+		}
+	};
 </script>
+
+<svelte:window on:keydown={onKeyDown} />
 
 <dialog class="modal" bind:this={dialog} data-modal="dailysales-modal">
 	<div class="modal-box max-w-none rounded bg-white h-[70vh]">

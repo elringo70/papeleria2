@@ -1,16 +1,17 @@
 <script>
 	import { enhance } from '$app/forms';
-	import { getContext } from 'svelte';
+	import { getContext, onMount, setContext } from 'svelte';
 	import { selectedTicket } from '../../../routes/orders/stores/store';
 	import Swal from 'sweetalert2';
 
 	const tickets = getContext('tickets');
-	const focusInputElement = getContext('focusInputElement');
 
 	export let showSearchProductModal;
 	export let showDailySalesModal;
 	/** @type {HTMLInputElement} bindInputElement */
 	export let bindInputElement;
+
+	const focusInputElement = getContext('focusInputElement');
 
 	const addProduct = (dataProduct) => {
 		if (dataProduct.requiredStock) {
@@ -49,7 +50,7 @@
 
 		return async ({ result }) => {
 			const { type, data } = result;
-			console.log(result);
+
 			switch (type) {
 				case 'success':
 					addProduct(data.product);
@@ -97,20 +98,22 @@
 	<div class="grid w-full grid-cols-4 flex-row justify-center gap-5">
 		<button
 			type="button"
-			class="btn btn-accent btn-sm hover:text-white text-xs shadow"
+			class="btn btn-accent sm:btn-sm lg:btn-md hover:text-white text-xs shadow"
 			on:click={showSearchProductModal}>Buscar Producto - F10</button
 		>
 
-		<button type="button" class="btn btn-accent btn-sm hover:text-white text-xs shadow"
+		<button type="button" class="btn btn-accent sm:btn-sm lg:btn-md hover:text-white text-xs shadow"
 			>Detalle de Ticket</button
 		>
 
 		<button
 			type="button"
-			class="btn btn-accent btn-sm hover:text-white text-xs shadow"
+			class="btn btn-accent sm:btn-sm lg:btn-md hover:text-white text-xs shadow"
 			on:click={showDailySalesModal}>Ventas del día - F8</button
 		>
 
-		<button type="submit" class="btn btn-accent btn-sm hover:text-white text-xs shadow">...</button>
+		<button type="submit" class="btn btn-accent sm:btn-sm lg:btn-md hover:text-white text-xs shadow"
+			>...</button
+		>
 	</div>
 </div>

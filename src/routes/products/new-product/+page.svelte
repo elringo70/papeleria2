@@ -6,6 +6,7 @@
 	import { confirmModal } from '$utils/modalButton';
 
 	import { firstUppercase } from '$utils/stringUtils.js';
+	import CropImageModal from './components/CropImageModal.svelte';
 
 	export let form;
 	export let data;
@@ -20,13 +21,19 @@
 	let stockMinimum = form?.data?.stockMinimum ?? '';
 	$: stock;
 	$: stockMinimum;
+	/** @type {HTMLDialogElement} dialog */
+	let dialog;
+	/** @type {HTMLInputElement|undefined} inputFileInput */
+	let inputFileInput;
+	/** @type {HTMLImageElement} imageElement */
+	let imageElement;
 
 	const handleSubmit = ({ formElement, formData, cancel }) => {
 		loading = true;
 
 		const { cost, price, wholesale, requiredStock } = Object.fromEntries(formData);
 
-		if (cost >= price || wholesale >= price || wholesale >= cost) {
+		if (wholesale <= cost || price <= cost || wholesale >= price) {
 			Swal.fire({
 				icon: 'warning',
 				text: 'Precio o mayoreo debe ser menor a costo',
@@ -82,6 +89,26 @@
 		stock = '';
 		stockMinimum = '';
 	};
+
+	const readImageURL = (file) => {
+		return new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.onload = (e) => resolve(e.target?.result);
+			reader.onerror = (e) => reject(e);
+			reader.readAsDataURL(file);
+		});
+	};
+
+	const onInputFileChange = () => {
+		if (!dialog.hasAttribute('open') && inputFileInput?.files && inputFileInput.files?.length > 0) {
+			setTimeout(async () => {
+				const file = inputFileInput?.files[0];
+				const url = await readImageURL(file);
+				imageElement.src = url;
+				dialog.showModal();
+			}, 500);
+		}
+	};
 </script>
 
 <svelte:head>
@@ -127,7 +154,9 @@
 						</div>
 						<input
 							type="text"
-							class="input input-bordered md:input-sm w-full {errors?._id ? 'input-error' : ''}"
+							class="input input-bordered sm:input-sm lg:input-md w-full {errors?._id
+								? 'input-error'
+								: ''}"
 							placeholder="5901234123457"
 							name="_id"
 							required
@@ -144,7 +173,9 @@
 						</div>
 						<input
 							type="text"
-							class="input input-bordered md:input-sm w-full {errors?.product ? 'input-error' : ''}"
+							class="input input-bordered sm:input-sm lg:input-md w-full {errors?.product
+								? 'input-error'
+								: ''}"
 							placeholder="Lapiz"
 							name="product"
 							required
@@ -161,8 +192,8 @@
 						</div>
 						<input
 							type="text"
-							class="input input-bordered md:input-sm w-full {errors?.brand
-								? 'input-bordered'
+							class="input input-bordered sm:input-sm lg:input-md w-full {errors?.brand
+								? 'input-bordered sm:input-sm'
 								: ''}"
 							placeholder="Berol"
 							name="brand"
@@ -171,45 +202,51 @@
 					</label>
 				</div>
 
-				<div class="flex flex-row space-x-4">
-					<label class="form-control w-full">
-						<div class="label">
-							<span class="label-text">Modelo</span>
-							{#if errors?.model}
-								<span class="label-text-alt">{errors?.model[0]}</span>
-							{/if}
-						</div>
-						<input
-							type="text"
-							class="input input-bordered md:input-sm w-full {errors?.model ? 'input-error' : ''}"
-							placeholder="Berol"
-							name="model"
-							value={form?.data?.model ?? ''}
-						/>
-					</label>
+				<div class="flex flex-row space-x-6">
+					<div class="basis-2/3">
+						<label class="form-control w-full">
+							<div class="label">
+								<span class="label-text">Modelo</span>
+								{#if errors?.model}
+									<span class="label-text-alt">{errors?.model[0]}</span>
+								{/if}
+							</div>
+							<input
+								type="text"
+								class="input input-bordered sm:input-sm lg:input-md w-full {errors?.model
+									? 'input-error'
+									: ''}"
+								placeholder="Berol"
+								name="model"
+								value={form?.data?.model ?? ''}
+							/>
+						</label>
+					</div>
 
-					<label class="form-control w-full max-w-xs">
-						<div class="label">
-							<span class="label-text font-semibold">* Categoría</span>
-							{#if errors?.category}
-								<span class="label-text-alt">{errors?.category[0]}</span>
-							{/if}
-						</div>
-						<select
-							class="select select-bordered md:select-sm w-full {errors?.category
-								? 'select-error'
-								: ''}"
-							name="category"
-							required
-							value={form?.data?.category ?? 'Categoría'}
-							errors={errors?.category}
-						>
-							<option disabled selected>Categoría</option>
-							{#each data?.categories as category}
-								<option value={category._id}>{firstUppercase(category.name)}</option>
-							{/each}
-						</select>
-					</label>
+					<div class="basis-1/3">
+						<label class="form-control w-full max-w-xs">
+							<div class="label">
+								<span class="label-text font-semibold">* Categoría</span>
+								{#if errors?.category}
+									<span class="label-text-alt">{errors?.category[0]}</span>
+								{/if}
+							</div>
+							<select
+								class="select select-bordered sm:select-sm lg:select-md w-full {errors?.category
+									? 'select-error'
+									: ''}"
+								name="category"
+								required
+								value={form?.data?.category ?? 'Categoría'}
+								errors={errors?.category}
+							>
+								<option disabled selected>Elegir categoria</option>
+								{#each data?.categories as category}
+									<option value={category._id}>{firstUppercase(category.name)}</option>
+								{/each}
+							</select>
+						</label>
+					</div>
 				</div>
 
 				<div class="flow-row flex space-x-6">
@@ -222,7 +259,9 @@
 						</div>
 						<input
 							type="number"
-							class="input input-bordered md:input-sm w-full {errors?.cost ? 'input-error' : ''}"
+							class="input input-bordered sm:input-sm lg:input-md w-full {errors?.cost
+								? 'input-error'
+								: ''}"
 							placeholder="$ 3.5"
 							name="cost"
 							required
@@ -240,7 +279,9 @@
 						</div>
 						<input
 							type="number"
-							class="input input-bordered md:input-sm w-full {errors?.price ? 'input-error' : ''}"
+							class="input input-bordered sm:input-sm lg:input-md w-full {errors?.price
+								? 'input-error'
+								: ''}"
 							placeholder="$ 7"
 							name="price"
 							required
@@ -258,7 +299,7 @@
 						</div>
 						<input
 							type="number"
-							class="input input-bordered md:input-sm w-full {errors?.wholesale
+							class="input input-bordered sm:input-sm lg:input-md w-full {errors?.wholesale
 								? 'input-error'
 								: ''}"
 							placeholder="$ 7"
@@ -282,7 +323,7 @@
 						</div>
 						<input
 							type="number"
-							class="input input-bordered md:input-sm w-full {errors?.stock
+							class="input input-bordered sm:input-sm lg:input-md w-full {errors?.stock
 								? 'input-error'
 								: ''} {isChecked ? '' : 'cursor-not-allowed'}"
 							name="stock"
@@ -302,7 +343,7 @@
 						</div>
 						<input
 							type="number"
-							class="input input-bordered md:input-sm w-full {errors?.stockMinimum
+							class="input input-bordered sm:input-sm lg:input-md w-full {errors?.stockMinimum
 								? 'input-error'
 								: ''} {isChecked ? '' : 'cursor-not-allowed'}"
 							name="stockMinimum"
@@ -328,16 +369,22 @@
 				</div>
 
 				<div class="flex flex-row space-x-4">
-					<div class="basis-2/3">
+					<div class="basis-4/6">
 						<input
 							type="file"
 							class="file-input file-input-bordered w-full"
 							name="image"
 							accept="image/jpg, image/jpeg, image/png, image/webp"
+							on:change={onInputFileChange}
+							bind:this={inputFileInput}
 						/>
 					</div>
 
-					<div class="flex basis-1/3">
+					<div class="basis-1/6">
+						<button type="button" class="btn btn-neutral w-full">Recortar</button>
+					</div>
+
+					<div class="flex basis-1/6">
 						<button class="btn btn-neutral w-full" type="submit" disabled={loading}>
 							{#if loading}
 								<span class="loading loading-dots loading-md"></span>
@@ -351,6 +398,8 @@
 		</form>
 	</div>
 </section>
+
+<!--<CropImageModal bind:dialog bind:imageElement />-->
 
 <style>
 	input[type='number']::-webkit-inner-spin-button,
