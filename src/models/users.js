@@ -81,16 +81,19 @@ export const User = models.User || model('User', userSchema);
 
 const customerSchema = new Schema({
 	balance: {
-		type: new Schema({
-			pendingBalance: {
-				type: Boolean,
-				default: false
+		type: new Schema(
+			{
+				pendingBalance: {
+					type: Boolean,
+					default: false
+				},
+				dueBalance: {
+					type: Number,
+					default: 0
+				}
 			},
-			dueBalance: {
-				type: Number,
-				default: 0
-			}
-		})
+			{ _id: false }
+		)
 	}
 });
 

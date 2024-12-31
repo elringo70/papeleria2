@@ -33,7 +33,7 @@
 
 		const { cost, price, wholesale, requiredStock } = Object.fromEntries(formData);
 
-		if (wholesale <= cost || price <= cost || wholesale >= price) {
+		if (cost >= price) {
 			Swal.fire({
 				icon: 'warning',
 				text: 'Precio o mayoreo debe ser menor a costo',
@@ -42,6 +42,19 @@
 
 			cancel();
 			loading = false;
+		}
+
+		if (wholesale > 0) {
+			if (cost >= price || wholesale >= price) {
+				Swal.fire({
+					icon: 'warning',
+					text: 'Precio o mayoreo debe ser menor a costo',
+					confirmButtonColor: '#3085d6'
+				});
+
+				cancel();
+				loading = false;
+			}
 		}
 
 		return async ({ result }) => {

@@ -14,7 +14,7 @@
 
 	/** @type {HTMLDialogElement} dialog */
 	export let dialog;
-	/** @type {HTMLElement} inputProduct */
+	/** @type {HTMLInputElement} inputProduct */
 	let inputProduct;
 	/** @type {HTMLFormElement} form */
 	let form;
@@ -32,6 +32,7 @@
 				case 'success':
 					modalSize.classList.remove('h-36');
 					modalSize.classList.add('h-[70vh]');
+
 					fillTable(data.products);
 					break;
 			}
@@ -50,10 +51,13 @@
 				return;
 			}
 
-			if (event.target.value.length > 3) form.requestSubmit();
+			if (event.target.value.length > 3) {
+				form.requestSubmit();
+			}
 		}, 500);
 	};
 
+	/** @param {number} index */
 	const handleOnClickProduct = (index) => {
 		searchProductStore.selectProduct(index);
 	};

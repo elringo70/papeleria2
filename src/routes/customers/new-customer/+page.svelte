@@ -6,6 +6,7 @@
 	import { Input, Combobox, Checkbox } from '$lib/components';
 
 	import { address, selectedAddress } from './addressStore';
+	import { beforeNavigate } from '$app/navigation';
 
 	export let form;
 
@@ -102,6 +103,13 @@
 		number = '';
 		address.resetAddress();
 	};
+
+	/** @param {KeyboardEvent} e */
+	const blockInvalidChar = (e) => ['e', 'E', '+', '-'].includes(e.key) && e.preventDefault();
+
+	beforeNavigate(() => {
+		resetAddress();
+	});
 </script>
 
 <svelte:head>
@@ -118,19 +126,20 @@
 			<div class="flex flex-row space-x-4">
 				<div class="basis-3/12">
 					<Input
-						label="Teléfono *"
+						label="* Teléfono"
 						name="phone"
-						type="tel"
+						type="number"
 						required={true}
 						maxlength={10}
 						pattern={'[0-9]{10}'}
 						value={form?.data?.phone ?? ''}
 						errors={errors?.phone}
+						on:keypress={blockInvalidChar}
 					/>
 				</div>
 				<div class="basis-3/12">
 					<Input
-						label="Nombre *"
+						label="* Nombre"
 						name="name"
 						required={true}
 						value={form?.data?.name ?? ''}
@@ -157,12 +166,24 @@
 
 			<div class="mb-3 flex flex-row">
 				<div class="basis-4/12">
-					<Checkbox
+					<!-- <Checkbox
 						label="¿Dirección?"
 						name="requiredAddress"
 						bind:checked={isChecked}
 						onChange={resetAddress}
-					/>
+					/> -->
+					<div class="form-control">
+						<label class="label cursor-pointer">
+							<span class="label-text">¿Dirección?</span>
+							<input
+								type="checkbox"
+								name="requiredAddress"
+								class="checkbox"
+								checked={isChecked}
+								on:change={resetAddress}
+							/>
+						</label>
+					</div>
 				</div>
 			</div>
 
@@ -182,15 +203,6 @@
 			</div>
 
 			<div class="flex flex-row space-x-4">
-				<div class="basis-4/12">
-					<Input
-						label="Calle"
-						name="street"
-						disabled={true}
-						errors={errors?.street}
-						value={street}
-					/>
-				</div>
 				<div class="basis-3/12">
 					<Input
 						label="Número"
@@ -201,6 +213,15 @@
 						errors={errors?.number}
 						value={number}
 						onChange={(e) => (number = e.target.value)}
+					/>
+				</div>
+				<div class="basis-4/12">
+					<Input
+						label="Calle"
+						name="street"
+						disabled={true}
+						errors={errors?.street}
+						value={street}
 					/>
 				</div>
 				<div class="basis-5/12">
@@ -221,12 +242,8 @@
 				<div class="basis-4/12">
 					<Input label="Estado" name="state" disabled={true} errors={errors?.state} value={state} />
 				</div>
-				<div class="mb-3 basis-4/12">
-					<button
-						type="submit"
-						class="w-full rounded bg-indigo-700 py-2 px-3 text-white shadow shadow-indigo-700 hover:bg-indigo-600"
-						disabled={loading}>Cliente nuevo</button
-					>
+				<div class="basis-4/12 flex items-end">
+					<button type="submit" class="btn btn-neutral w-full" disabled={loading}>Guardar</button>
 				</div>
 			</div>
 

@@ -10,26 +10,23 @@ function createDailySalesStore() {
 	};
 
 	const setData = (data) => {
-		update(() => {
-			if (data.length > 0) {
-				const tickets = data.map((ticket) => ({ ...ticket, selectedTicket: false }));
+		if (data.length > 0) {
+			const tickets = data.map((ticket) => ({ ...ticket, selectedTicket: false }));
 
-				const notCancelledTicket = tickets.findIndex(
-					(ticket) => ticket.orderStatus === 'completed'
-				);
+			const notCancelledTicket = tickets.findIndex((ticket) => ticket.orderStatus === 'completed');
 
-				if (Math.sign(notCancelledTicket) > 0) {
-					tickets[notCancelledTicket].selectedTicket = true;
-					selectedTicket.set(tickets[0]);
-				}
-
-				return [...tickets];
-			} else {
-				return [];
+			if (Math.sign(notCancelledTicket) > 0) {
+				tickets[notCancelledTicket].selectedTicket = true;
+				selectedTicket.set(tickets[notCancelledTicket]);
 			}
-		});
+
+			set(tickets);
+		} else {
+			set([]);
+		}
 	};
 
+	/** @param {number} ticket */
 	const selectTicket = (ticket) => {
 		update((tickets) => {
 			for (let i = 0; i < tickets.length; i++) {

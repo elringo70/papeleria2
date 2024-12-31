@@ -1,5 +1,5 @@
 <script>
-	import { onMount, createEventDispatcher, getContext } from 'svelte';
+	import { createEventDispatcher, getContext } from 'svelte';
 	import { invalidateAll } from '$app/navigation';
 	import { applyAction, deserialize } from '$app/forms';
 
@@ -11,7 +11,7 @@
 	const focusInputElement = getContext('focusInputElement');
 
 	export let dailySales;
-	/** @type {HTMLDialogElement} dialog*/
+	/** @type {HTMLDialogElement} dialog */
 	export let dialog;
 
 	$: selectedProducts = $selectedTicket.products || [];
@@ -56,6 +56,8 @@
 
 	/** @param {{ currentTarget: EventTarget & HTMLFormElement}} event */
 	async function handleSubmit(event) {
+		if (Object.keys($selectedTicket).length === 0) return;
+
 		dialog.close();
 
 		const currentTarget = event.currentTarget;

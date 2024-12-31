@@ -3,12 +3,11 @@ import { writable } from 'svelte/store';
 export const selectedProduct = writable(null);
 
 function createSearchProductStore() {
-	const { subscribe, set, update } = writable([]);
+	const { subscribe, set } = writable([]);
 
 	const setProducts = (products) => {
 		if (products.length > 0) {
 			set(products);
-			selectedProduct.set(0);
 		}
 		set(products);
 	};
@@ -20,10 +19,7 @@ function createSearchProductStore() {
 
 	/** @param {number} index */
 	const selectProduct = (index) => {
-		update((store) => {
-			selectedProduct.set(index);
-			return [...store];
-		});
+		selectedProduct.set(index);
 	};
 
 	return {

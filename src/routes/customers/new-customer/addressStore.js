@@ -39,6 +39,8 @@ function addressStore() {
 			try {
 				const response = await fetch(url);
 				const data = await response.json();
+				console.log(data);
+
 				set(data);
 			} catch (error) {
 				console.log(error);
@@ -58,7 +60,7 @@ function addressStore() {
 
 		selectedAddress.set({
 			street: findAddress.address.road,
-			municipality: findAddress.address.residential,
+			municipality: findAddress.address.residential ?? findAddress.address.neighbourhood,
 			city: findAddress.address.city ?? findAddress.address.county,
 			state: findAddress.address.state,
 			place_id: findAddress.place_id

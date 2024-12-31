@@ -13,9 +13,7 @@
 		focusInputElement();
 	}
 
-	async function removeTicket(e) {
-		e.stopPropagation();
-
+	async function removeTicket() {
 		const index = this.value;
 
 		if ($tickets[index].products.length > 0 || $tickets[index].customer.phone) {
@@ -48,7 +46,7 @@
 			{ticket}
 			{index}
 			onClick={() => selectTicket(index)}
-			onDblClick={() => showCustomerSearchModal()}
+			onDblClick={showCustomerSearchModal}
 			{removeTicket}
 		/>
 	{/each}

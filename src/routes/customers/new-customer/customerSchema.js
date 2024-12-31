@@ -8,7 +8,7 @@ export const customerSchema = z
 			.superRefine((val, ctx) => {
 				const parsed = parseInt(val, 10);
 
-				if (!(isNaN(parsed) || isFinite(val))) {
+				if (isNaN(parsed) || parsed < 0) {
 					ctx.addIssue({
 						code: z.ZodIssueCode.custom,
 						message: 'Solo números'
