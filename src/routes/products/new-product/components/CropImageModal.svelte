@@ -12,7 +12,13 @@
 <dialog id="cropImageModal" class="modal" bind:this={dialog}>
 	<div class="modal-box h-5/6 w-4/6 max-w-none rounded bg-white">
 		<cropper-canvas background class="w-full h-/6">
-			<cropper-image alt="Picture" rotatable scalable skewable translatable bind:this={imageElement}
+			<cropper-image
+				src="../../../../../static/bolsas.jpg:"
+				alt="Picture"
+				rotatable
+				scalable
+				skewable
+				translatable
 			></cropper-image>
 			<cropper-shade hidden></cropper-shade>
 			<cropper-handle action="select" plain></cropper-handle>

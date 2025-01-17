@@ -1,82 +1,55 @@
 <script>
-	import { InputFile } from '$lib/components';
 	import { onMount } from 'svelte';
+	import Image from '../../lib/assets/images/bolsas.jpg';
 
-	let image, cropper, croppedImage, input;
-	let showImage = false;
-
-	const onImageLoad = () => {
-		const file = input.files[0];
-
-		if (file) {
-			showImage = true;
-
-			const reader = new FileReader();
-			reader.addEventListener('load', function () {
-				image.setAttribute('src', reader.result);
-			});
-
-			reader.readAsDataURL(file);
-
-			return;
-		}
-
-		showImage = false;
-	};
-
-	const setCroppedImage = () => {
-		const cropped = cropper.getCroppedCanvas().toDataURL('image/png');
-		croppedImage.setAttribute('src', cropped);
-	};
-
-	const initCropper = () => {
-		cropper = new Cropper(image, {
-			aspectRatio: 4 / 3,
-			rotatable: false,
-			zoomable: false
-		});
-	};
+	/** @type {HTMLImageElement} rawImage */
+	let rawImage;
+	/** @type {HTMLImageElement} cropImage */
+	let cropImage;
+	/** @type {HTMLCanvasElement} canvas */
+	let canvas;
 
 	onMount(() => {
-		image.addEventListener('load', initCropper);
+		import('cropperjs');
 	});
 </script>
 
-<svelte:head>
-	<link
-		rel="stylesheet"
-		href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css"
-		integrity="sha512-hvNR0F/e2J7zPPfLC9auFe3/SE0yG4aJCOd/qxew74NN7eyiSKjr7xJJMu1Jy2wf7FXITpWS1E/RY8yzuXN7VA=="
-		crossorigin="anonymous"
-		referrerpolicy="no-referrer"
-	/>
-	<script
-		src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"
-		integrity="sha512-9KkIqdfN7ipEW6B6k+Aq20PV31bjODg4AA52W+tYtAE0jE0kMx49bjJ3FgvS56wzmyfMUHbQ4Km2b7l9+Y/+Eg=="
-		crossorigin="anonymous"
-		referrerpolicy="no-referrer"
-	></script>
-</svelte:head>
-
-<section class="grid h-[calc(100vh-56px)] grid-cols-4 grid-rows-5 gap-5 bg-gray-100 p-7">
-	<div class="col-span-4 row-span-1 bg-white shadow-lg">
-		<div class="m-3">
-			<InputFile name="image" onChange={onImageLoad} bind:bindElement={input} />
+<section class="h-[calc(100vh-56px)] p-7">
+	<div class="flex h-1/2">
+		<div class="basis-1/2 h-full">
+			<cropper-canvas background class="h-full" bind:this={canvas}>
+				<cropper-image
+					src={Image}
+					alt="Picture"
+					rotatable
+					scalable
+					skewable
+					translatable
+					bind:this={rawImage}
+				></cropper-image>
+				<cropper-shade></cropper-shade>
+				<cropper-handle action="select" hidden></cropper-handle>
+				<cropper-selection initial-coverage="0.5" movable resizable>
+					<cropper-grid role="grid" covered></cropper-grid>
+					<cropper-crosshair centered></cropper-crosshair>
+					<cropper-handle action="move" theme-color="rgba(255, 255, 255, 0.35)"></cropper-handle>
+					<cropper-handle action="se-resize"></cropper-handle>
+					<cropper-handle action="sw-resize"></cropper-handle>
+					<!--
+          <cropper-handle action="n-resize"></cropper-handle>
+					<cropper-handle action="e-resize"></cropper-handle>
+					<cropper-handle action="s-resize"></cropper-handle>
+					<cropper-handle action="w-resize"></cropper-handle>
+					<cropper-handle action="ne-resize"></cropper-handle>
+					<cropper-handle action="nw-resize"></cropper-handle>
+					<cropper-handle action="se-resize"></cropper-handle>
+					<cropper-handle action="sw-resize"></cropper-handle>
+-->
+				</cropper-selection>
+			</cropper-canvas>
 		</div>
-	</div>
-	<div class="col-span-2 row-span-4 bg-white shadow-lg">
-		<div><img alt="" bind:this={image} class="block max-w-full" /></div>
-		<div>
-			<button
-				class="rounded bg-indigo-500 px-3 py-2 text-white shadow shadow-indigo-500 hover:bg-indigo-600"
-				type="button"
-				on:click={setCroppedImage}>Crop</button
-			>
-		</div>
-	</div>
-	<div class="col-span-2 row-span-4 bg-white shadow-lg">
-		<div class="h-full w-full">
-			<img alt="" bind:this={croppedImage} class="block max-h-full max-w-full" />
+		<div class="basis-1/2 h-full">
+			<img alt="" bind:this={cropImage} />
 		</div>
 	</div>
 </section>
