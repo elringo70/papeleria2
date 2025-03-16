@@ -1,4 +1,6 @@
 <script>
+	import { onMount } from 'svelte';
+	import DropdownLink from './DropdownLink.svelte';
 	import UserProfile from './UserProfile.svelte';
 
 	const navbarLinks = [
@@ -31,18 +33,28 @@
 		{ name: 'Test', href: '/test', active: false },
 		{ name: 'Corte', href: '/proof', active: false }
 	];
+
+	onMount(() => {
+		window.addEventListener('click', function (e) {
+			document.querySelectorAll('.dropdown-item').forEach((item) => {
+				if (!item.contains(e.target)) {
+					item.open = false;
+				}
+			});
+		});
+	});
 </script>
 
 <div class="navbar bg-base-100">
 	<div class="navbar-start">
-		<a class="btn btn-ghost text-xl">Papelería El Cyber</a>
+		<a href="/orders" class="btn btn-ghost text-xl">Papelería El Cyber</a>
 	</div>
 	<div class="navbar-center">
 		<ul class="menu menu-horizontal px-1">
 			{#each navbarLinks as link}
 				{#if link.dropdown}
-					<li>
-						<details>
+					<!--<li>
+						<details class="dropdown-item">
 							<summary>{link.name}</summary>
 							<ul class="p-2">
 								{#each link.dropdown.links as dropdownLink}
@@ -50,9 +62,18 @@
 								{/each}
 							</ul>
 						</details>
-					</li>
+					</li>-->
+					<div class="dropdown dropdown-end">
+						<div tabindex="0" role="button" class="btn btn-ghost rounded-btn">{link.name}</div>
+						<ul class="menu dropdown-content bg-base-100 rounded-box z-[1] mt-4 w-52 p-2 shadow">
+							{#each link.dropdown.links as dropdownLink}
+								<li><a href={dropdownLink.href}>{dropdownLink.name}</a></li>
+							{/each}
+						</ul>
+					</div>
 				{:else}
-					<li><a href={link.href}>{link.name}</a></li>
+					<!--<li><a href={link.href}>{link.name}</a></li>-->
+					<a href={link.href} class="btn btn-ghost rounded-btn">{link.name}</a>
 				{/if}
 			{/each}
 		</ul>

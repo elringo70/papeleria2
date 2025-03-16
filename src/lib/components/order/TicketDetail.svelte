@@ -2,6 +2,8 @@
 	import { getContext } from 'svelte';
 	import Icon from '@iconify/svelte';
 
+	import { selectedProduct } from '../../../routes/orders/stores/ticketDetailStore';
+
 	const focusInputElement = getContext('focusInputElement');
 	const selectedTicket = getContext('selectedTicket');
 	const tickets = getContext('tickets');
@@ -30,6 +32,10 @@
 		});
 		focusInputElement();
 	}
+
+	const selectProduct = (index) => {
+		selectedProduct.set(index);
+	};
 </script>
 
 <div class="h-full overflow-auto">
@@ -47,8 +53,13 @@
 			</tr>
 		</thead>
 		<tbody class="text-sm font-light text-gray-600">
-			{#each $selectedTicket.products as ticket}
-				<tr class="border-b border-gray-200 bg-gray-50 hover:bg-gray-100">
+			{#each $selectedTicket.products as ticket, index}
+				<tr
+					class={$selectedProduct === index
+						? 'cursor-default select-none border-b bg-blue-400 text-white '
+						: 'cursor-default select-none border-b bg-white py-1 hover:bg-gray-100'}
+					on:click={() => selectProduct(index)}
+				>
 					<td class="px-2 py-1.5 text-left text-xs">{ticket.product._id}</td>
 					<td class="overflow-hidden text-ellipsis whitespace-nowrap px-2 py-1.5 text-left text-xs"
 						>{ticket.product.product}</td
