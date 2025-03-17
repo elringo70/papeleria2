@@ -10,3 +10,5 @@ EXPOSE 5173
 
 CMD ["node", "build/index.js"]
 
+
+
