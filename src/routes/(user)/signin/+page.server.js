@@ -21,7 +21,7 @@ export const actions = {
 		cookies.set('session', body.token, {
 			path: '/',
 			httpOnly: true,
-			sameSite: 'strict',
+			sameSite: 'none',
 			secure: process.env.NODE_ENV === 'production',
 			maxAge: expiresIn
 		});
@@ -29,7 +29,7 @@ export const actions = {
 		cookies.set('refreshToken', body.refreshToken, {
 			path: '/',
 			httpOnly: true,
-			sameSite: 'strict',
+			sameSite: 'none',
 			secure: process.env.NODE_ENV === 'production',
 			maxAge: expiresIn
 		});
@@ -42,7 +42,7 @@ export const actions = {
 		cookies.set('session', body.token, {
 			path: '/',
 			httpOnly: true,
-			sameSite: 'strict',
+			sameSite: 'none',
 			secure: process.env.NODE_ENV === 'production',
 			maxAge: expiresIn
 		});

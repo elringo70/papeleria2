@@ -2,7 +2,6 @@
 	import { applyAction, deserialize } from '$app/forms';
 	import { signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword } from 'firebase/auth';
 	import Swal from 'sweetalert2/dist/sweetalert2.all.js';
-	import { Input } from '$lib/components';
 	import { auth } from '../../../utils/firebase';
 
 	let errors;
