@@ -22,7 +22,7 @@ export const actions = {
 			path: '/',
 			httpOnly: true,
 			sameSite: 'none',
-			secure: process.env.NODE_ENV === 'production',
+			secure: true,
 			maxAge: expiresIn
 		});
 
@@ -30,7 +30,7 @@ export const actions = {
 			path: '/',
 			httpOnly: true,
 			sameSite: 'none',
-			secure: process.env.NODE_ENV === 'production',
+			secure: true,
 			maxAge: expiresIn
 		});
 
@@ -43,7 +43,7 @@ export const actions = {
 			path: '/',
 			httpOnly: true,
 			sameSite: 'none',
-			secure: process.env.NODE_ENV === 'production',
+			secure: true,
 			maxAge: expiresIn
 		});
 
