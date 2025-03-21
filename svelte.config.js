@@ -7,15 +7,7 @@ const config = {
 		alias: {
 			$utils: './src/utils',
 			$models: './src/models'
-		},
-		vite: () => ({
-			server: {
-				fs: {
-					allow: ['./static']
-				},
-				cors: true
-			}
-		})
+		}
 	},
 	preprocess: vitePreprocess()
 };
