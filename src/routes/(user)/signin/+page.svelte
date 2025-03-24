@@ -60,6 +60,7 @@
 
 			applyAction(result);
 		} catch (error) {
+			console.log(error);
 			const firebaseErrors = ['auth/user-not-found'];
 
 			Swal.fire({

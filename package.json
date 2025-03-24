@@ -39,6 +39,7 @@
 	"type": "module",
 	"dependencies": {
 		"chart.js": "^4.4.1",
+		"cors": "^2.8.5",
 		"cropperjs": "^2.0.0-rc.2",
 		"firebase": "^10.7.1",
 		"firebase-admin": "^12.0.0",

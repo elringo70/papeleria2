@@ -14,6 +14,13 @@ const privateRoutes = [
 	'/test'
 ];
 
+const corsOptions = {
+	origin: '*', // Reemplaza con el dominio de tu frontend
+	methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+	credentials: true, // Permite el envío de cookies y encabezados de autenticación
+	optionsSuccessStatus: 204 // Algunos navegadores (e.g., Chrome) requieren esto para respuestas OPTIONS
+};
+
 /** @type {import('@sveltejs/kit').Handle} */
 export async function handle({ event, resolve }) {
 	const { cookies, locals, url } = event;
@@ -21,6 +28,17 @@ export async function handle({ event, resolve }) {
 	const token = cookies.get('session');
 	const refreshToken = cookies.get('refreshToken');
 	const currentLocation = url.pathname;
+
+	if (event.request.method === 'OPTIONS') {
+		return new Response(null, {
+			headers: {
+				'Access-Control-Allow-Origin': corsOptions.origin,
+				'Access-Control-Allow-Methods': corsOptions.methods,
+				'Access-Control-Allow-Credentials': corsOptions.credentials.toString(),
+				'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+			}
+		});
+	}
 
 	if (!token) {
 		locals.user = null;
@@ -46,7 +64,7 @@ export async function handle({ event, resolve }) {
 				cookies.set('session', id_token, {
 					path: '/',
 					httpOnly: true,
-					sameSite: 'strict',
+					sameSite: 'none',
 					secure: process.env.NODE_ENV === 'production',
 					maxAge: expiresIn
 				});
@@ -54,7 +72,7 @@ export async function handle({ event, resolve }) {
 				cookies.set('refreshToken', refresh_token, {
 					path: '/',
 					httpOnly: true,
-					sameSite: 'strict',
+					sameSite: 'none',
 					secure: process.env.NODE_ENV === 'production',
 					maxAge: expiresIn
 				});
@@ -71,6 +89,12 @@ export async function handle({ event, resolve }) {
 	}
 
 	const response = await resolve(event);
+
+	// Agregar encabezados CORS a la respuesta
+	response.headers.set('Access-Control-Allow-Origin', corsOptions.origin);
+	response.headers.set('Access-Control-Allow-Methods', corsOptions.methods);
+	response.headers.set('Access-Control-Allow-Credentials', corsOptions.credentials.toString());
+
 	return response;
 }
 

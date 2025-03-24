@@ -1,5 +1,4 @@
 import { error, redirect } from '@sveltejs/kit';
-import admin from '$utils/firebase-admin';
 
 const expiresIn = 1000 * 60 * 60 * 27 * 7;
 
@@ -18,35 +17,41 @@ export const actions = {
 	loginWithEmailAndPassword: async ({ request, cookies }) => {
 		const body = Object.fromEntries(await request.formData());
 
-		cookies.set('session', body.token, {
-			path: '/',
-			httpOnly: true,
-			sameSite: 'none',
-			secure: true,
-			maxAge: expiresIn
-		});
+		try {
+			cookies.set('session', body.token, {
+				path: '/',
+				httpOnly: true,
+				sameSite: 'none',
+				secure: true,
+				maxAge: expiresIn
+			});
 
-		cookies.set('refreshToken', body.refreshToken, {
-			path: '/',
-			httpOnly: true,
-			sameSite: 'none',
-			secure: true,
-			maxAge: expiresIn
-		});
-
+			cookies.set('refreshToken', body.refreshToken, {
+				path: '/',
+				httpOnly: true,
+				sameSite: 'none',
+				secure: true,
+				maxAge: expiresIn
+			});
+		} catch (error) {
+			console.log(error);
+		}
 		redirect(303, '/orders');
 	},
 	loginWithGoogle: async ({ request, cookies }) => {
 		const body = Object.fromEntries(await request.formData());
 
-		cookies.set('session', body.token, {
-			path: '/',
-			httpOnly: true,
-			sameSite: 'none',
-			secure: true,
-			maxAge: expiresIn
-		});
-
+		try {
+			cookies.set('session', body.token, {
+				path: '/',
+				httpOnly: true,
+				sameSite: 'none',
+				secure: true,
+				maxAge: expiresIn
+			});
+		} catch (error) {
+			console.log(error);
+		}
 		redirect(303, '/orders');
 	}
 };
