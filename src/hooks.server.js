@@ -78,6 +78,7 @@ export async function handle({ event, resolve }) {
 				});
 			}
 		} catch (error) {
+			console.log(error);
 			cookies.delete('session', { path: '/' });
 			cookies.delete('refreshToken', { path: '/' });
 			locals.user = null;
